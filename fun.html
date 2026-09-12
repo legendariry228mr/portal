@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎲 Развлечения PRO</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23fbbf24'/%3E%3Cstop offset='50%25' stop-color='%23ec4899'/%3E%3Cstop offset='100%25' stop-color='%237b2ff7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23g)'/%3E%3Ctext x='50%25' y='60%25' font-family='Arial,sans-serif' font-size='250' font-weight='900' fill='%23ffffff' text-anchor='middle' dominant-baseline='middle'%3E🎲%3C/text%3E%3C/svg%3E">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; }
+  body { background: linear-gradient(135deg, #0a0a14, #1a0a2d, #0a1a2d); color: #fff; }
+
+  .app { height: 100vh; display: flex; flex-direction: column; }
+
+  /* ТОПБАР */
+  .topbar {
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #1a0a2d, #0a1a2d);
+    border-bottom: 2px solid rgba(251,191,36,0.3);
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0; flex-wrap: wrap;
+  }
+  .logo {
+    width: 44px; height: 44px; border-radius: 14px;
+    background: linear-gradient(135deg, #fbbf24, #ec4899);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 0 20px rgba(251,191,36,0.6);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 20px rgba(251,191,36,0.6); }
+    50% { box-shadow: 0 0 30px rgba(236,72,153,0.8); }
+  }
+  .logo-text h1 {
+    font-size: 20px; font-weight: 900;
+    background: linear-gradient(135deg, #fbbf24, #ec4899, #7b2ff7);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+  }
+  .logo-text p { font-size: 11px; color: #888; }
+
+  .back-btn {
+    margin-left: auto;
+    padding: 9px 16px; border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.15);
+    color: #fff; font-size: 13px; font-weight: 700;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { background: rgba(251,191,36,0.25); border-color: #fbbf24; }
+
+  /* ВКЛАДКИ */
+  .tabs {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    background: rgba(0,0,0,0.4);
+    padding: 8px; border-radius: 16px;
+    margin: 14px;
+    border: 1px solid rgba(251,191,36,0.2);
+    flex-shrink: 0;
+  }
+  .tab {
+    flex: 1; min-width: 90px;
+    padding: 12px 14px; border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid transparent;
+    color: #c0c0e0; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .tab:hover { background: rgba(251,191,36,0.15); color: #fff; }
+  .tab.active {
+    background: linear-gradient(135deg, #fbbf24, #ec4899);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(236,72,153,0.5);
+    border-color: transparent;
+  }
+
+  /* КОНТЕНТ */
+  .content {
+    flex: 1; overflow-y: auto;
+    padding: 0 20px 20px;
+  }
+  .content::-webkit-scrollbar { width: 8px; }
+  .content::-webkit-scrollbar-thumb { background: rgba(251,191,36,0.5); border-radius: 4px; }
+
+  .panel { display: none; animation: fadeIn 0.4s; }
+  .panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card {
+    background: linear-gradient(135deg, rgba(251,191,36,0.08), rgba(236,72,153,0.08));
+    border: 2px solid rgba(251,191,36,0.3);
+    border-radius: 24px;
+    padding: 30px;
+    max-width: 700px;
+    margin: 0 auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .card h2 {
+    font-size: 26px; font-weight: 900;
+    background: linear-gradient(135deg, #fbbf24, #ec4899);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .card p.desc {
+    color: #a0a0c0; font-size: 14px; line-height: 1.6;
+    text-align: center; margin-bottom: 24px;
+  }
+
+  /* ПОЛЯ */
+  .field {
+    display: flex; flex-direction: column; gap: 6px;
+    margin-bottom: 14px;
+  }
+  .field label {
+    font-size: 12px; color: #888;
+    text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  .field input, .field select, .field textarea {
+    padding: 14px 18px; border-radius: 14px;
+    border: 2px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: #fff; font-size: 15px;
+    outline: none; font-family: inherit;
+    transition: all 0.2s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: #fbbf24;
+    box-shadow: 0 0 0 3px rgba(251,191,36,0.2);
+  }
+  .field option { background: #1a0a2d; }
+  .field textarea { resize: vertical; min-height: 80px; }
+
+  /* КНОПКИ */
+  .btn {
+    padding: 16px 32px; border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, #fbbf24, #ec4899);
+    color: #fff; font-size: 16px; font-weight: 800;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 8px 30px rgba(236,72,153,0.5);
+    font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(236,72,153,0.7); }
+  .btn:active { transform: translateY(0); }
+  .btn.secondary {
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.15);
+    box-shadow: none;
+    font-size: 14px;
+  }
+  .btn.secondary:hover { background: rgba(251,191,36,0.2); border-color: #fbbf24; }
+
+  /* РЕЗУЛЬТАТ */
+  .result {
+    margin-top: 20px;
+    padding: 24px;
+    background: rgba(0,0,0,0.4);
+    border: 2px solid rgba(251,191,36,0.4);
+    border-radius: 20px;
+    min-height: 100px;
+    font-size: 16px; line-height: 1.7;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    animation: fadeIn 0.4s;
+    text-align: center;
+  }
+  .result.hidden { display: none; }
+  .result.big { font-size: 22px; font-weight: 700; color: #fbbf24; }
+
+  /* ГАДАЛКА - КАРТА */
+  .tarot-card {
+    width: 240px; height: 360px;
+    margin: 20px auto;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #2d1b4e, #7b2ff7);
+    border: 4px solid #fbbf24;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    box-shadow: 0 20px 60px rgba(123,47,247,0.6), 0 0 40px rgba(251,191,36,0.4);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.6s;
+    transform-style: preserve-3d;
+  }
+  .tarot-card.flipped { transform: rotateY(180deg); }
+  .tarot-card .front, .tarot-card .back {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    border-radius: 16px;
+    backface-visibility: hidden;
+    padding: 20px;
+    text-align: center;
+  }
+  .tarot-card .front {
+    font-size: 80px;
+  }
+  .tarot-card .back {
+    transform: rotateY(180deg);
+    background: linear-gradient(135deg, #fbbf24, #ec4899);
+    color: #000;
+  }
+  .tarot-card .back .icon { font-size: 70px; margin-bottom: 12px; }
+  .tarot-card .back .name { font-size: 20px; font-weight: 900; margin-bottom: 8px; }
+  .tarot-card .back .meaning { font-size: 13px; line-height: 1.5; }
+
+  /* IQ-ТЕСТ */
+  .iq-question {
+    background: rgba(0,0,0,0.3);
+    padding: 20px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+  }
+  .iq-question .q-text {
+    font-size: 16px; font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .iq-question .options {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .iq-option {
+    padding: 12px 16px; border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    cursor: pointer; transition: all 0.2s;
+    font-size: 14px; font-family: inherit;
+    color: #fff; text-align: left;
+  }
+  .iq-option:hover { background: rgba(251,191,36,0.2); border-color: #fbbf24; }
+  .iq-option.selected {
+    background: linear-gradient(135deg, #fbbf24, #ec4899);
+    border-color: transparent;
+  }
+  .iq-option.correct {
+    background: linear-gradient(135deg, #39ff14, #22c55e);
+    color: #000;
+  }
+  .iq-option.wrong {
+    background: rgba(248,113,113,0.3);
+    border-color: #f87171;
+  }
+
+  /* ГОРОСКОП */
+  .zodiac-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .zodiac-btn {
+    aspect-ratio: 1;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    color: #fff; cursor: pointer;
+    font-size: 24px; font-family: inherit;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 2px;
+    transition: all 0.2s;
+  }
+  .zodiac-btn small {
+    font-size: 9px; color: #888;
+    font-weight: 700;
+  }
+  .zodiac-btn:hover { background: rgba(251,191,36,0.2); border-color: #fbbf24; }
+  .zodiac-btn.active {
+    background: linear-gradient(135deg, #fbbf24, #ec4899);
+    border-color: transparent;
+    box-shadow: 0 0 20px rgba(236,72,153,0.5);
+  }
+  .zodiac-btn.active small { color: #fff; }
+
+  /* КУБИК */
+  .dice-display {
+    display: flex; gap: 20px;
+    align-items: center; justify-content: center;
+    margin: 24px 0;
+  }
+  .dice {
+    width: 100px; height: 100px;
+    background: linear-gradient(135deg, #fbbf24, #ec4899);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 60px;
+    box-shadow: 0 10px 30px rgba(236,72,153,0.5);
+    animation: diceShake 0.5s infinite;
+  }
+  @keyframes diceShake {
+    0%,100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+  .coin {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 50px; font-weight: 900; color: #000;
+    box-shadow: 0 10px 30px rgba(251,191,36,0.5);
+    animation: coinFlip 0.5s infinite;
+  }
+  @keyframes coinFlip {
+    0% { transform: rotateY(0deg); }
+    50% { transform: rotateY(180deg); }
+    100% { transform: rotateY(360deg); }
+  }
+
+  /* МЕМ-МАШИНА */
+  .meme-display {
+    background: #0d0d1a;
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    margin: 20px 0;
+    border: 2px solid rgba(251,191,36,0.3);
+    min-height: 200px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 20px;
+  }
+  .meme-display .emoji { font-size: 80px; }
+  .meme-display .text { font-size: 20px; font-weight: 800; line-height: 1.4; }
+
+  /* ФАКТЫ */
+  .fact-display {
+    background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(236,72,153,0.15));
+    border-radius: 24px;
+    padding: 40px 30px;
+    text-align: center;
+    margin: 20px 0;
+    min-height: 200px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 16px;
+    border: 2px solid rgba(251,191,36,0.3);
+  }
+  .fact-display .icon { font-size: 70px; }
+  .fact-display .text { font-size: 17px; line-height: 1.6; }
+
+  @media (max-width: 600px) {
+    .tabs { padding: 6px; margin: 10px; }
+    .tab { padding: 10px 8px; font-size: 11px; }
+    .card { padding: 20px; border-radius: 20px; }
+    .card h2 { font-size: 22px; }
+    .tarot-card { width: 200px; height: 300px; }
+    .tarot-card .front { font-size: 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="logo">🎲</div>
+    <div class="logo-text">
+      <h1>Развлечения PRO</h1>
+      <p>6 развлечений в одном месте</p>
+    </div>
+    <a class="back-btn" href="2test.html">← В портал</a>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('tarot', event)">🔮 Гадалка</button>
+    <button class="tab" onclick="showTab('iq', event)">🧠 Тест IQ</button>
+    <button class="tab" onclick="showTab('horoscope', event)">⭐ Гороскоп</button>
+    <button class="tab" onclick="showTab('facts', event)">💡 Факты</button>
+    <button class="tab" onclick="showTab('memes', event)">😂 Мемы</button>
+    <button class="tab" onclick="showTab('random', event)">🎲 Кубик</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ГАДАЛКА -->
+    <div class="panel active" id="panel-tarot">
+      <div class="card">
+        <h2>🔮 Гадалка</h2>
+        <p class="desc">Задай вопрос и вытяни карту. Карты Таро расскажут о будущем!</p>
+
+        <div class="field">
+          <label>Твой вопрос (необязательно)</label>
+          <input type="text" id="tarotQuestion" placeholder="Что меня ждёт?">
+        </div>
+
+        <div class="tarot-card" id="tarotCard" onclick="flipTarot()">
+          <div class="front">🎴</div>
+          <div class="back">
+            <div class="icon" id="tarotIcon">✨</div>
+            <div class="name" id="tarotName">—</div>
+            <div class="meaning" id="tarotMeaning">Нажми на карту</div>
+          </div>
+        </div>
+
+        <button class="btn" onclick="drawTarot()">🎴 Вытянуть карту</button>
+      </div>
+    </div>
+
+    <!-- IQ ТЕСТ -->
+    <div class="panel" id="panel-iq">
+      <div class="card">
+        <h2>🧠 Тест на IQ</h2>
+        <p class="desc">10 вопросов на логику и смекалку. Проверь себя!</p>
+
+        <div id="iqQuestions"></div>
+
+        <button class="btn" id="iqBtn" onclick="submitIQ()">✅ Проверить</button>
+        <button class="btn secondary" onclick="startIQ()">🔄 Начать заново</button>
+
+        <div class="result hidden" id="iqResult"></div>
+      </div>
+    </div>
+
+    <!-- ГОРОСКОП -->
+    <div class="panel" id="panel-horoscope">
+      <div class="card">
+        <h2>⭐ Гороскоп на сегодня</h2>
+        <p class="desc">Выбери знак зодиака — получи предсказание на день!</p>
+
+        <div class="zodiac-grid" id="zodiacGrid"></div>
+
+        <div class="result hidden" id="horoscopeResult"></div>
+      </div>
+    </div>
+
+    <!-- ФАКТЫ -->
+    <div class="panel" id="panel-facts">
+      <div class="card">
+        <h2>💡 Случайные факты</h2>
+        <p class="desc">Интересные факты обо всём на свете!</p>
+
+        <div class="fact-display">
+          <div class="icon">💡</div>
+          <div class="text" id="factText">Нажми кнопку, чтобы получить факт</div>
+        </div>
+
+        <button class="btn" onclick="showRandomFact()">🎲 Случайный факт</button>
+      </div>
+    </div>
+
+    <!-- МЕМЫ -->
+    <div class="panel" id="panel-memes">
+      <div class="card">
+        <h2>😂 Мем-машина</h2>
+        <p class="desc">Генерируй случайные мемы!</p>
+
+        <div class="meme-display">
+          <div class="emoji" id="memeEmoji">😂</div>
+          <div class="text" id="memeText">Нажми кнопку!</div>
+        </div>
+
+        <button class="btn" onclick="generateMeme()">🎲 Случайный мем</button>
+      </div>
+    </div>
+
+    <!-- КУБИК И МОНЕТКА -->
+    <div class="panel" id="panel-random">
+      <div class="card">
+        <h2>🎲 Кубик и монетка</h2>
+        <p class="desc">Брось кубик или монетку!</p>
+
+        <div class="dice-display">
+          <div class="dice" id="diceDisplay">🎲</div>
+          <div class="coin" id="coinDisplay">?</div>
+        </div>
+
+        <button class="btn" onclick="rollDice()">🎲 Бросить кубик</button>
+        <button class="btn" onclick="flipCoin()">🪙 Бросить монетку</button>
+        <button class="btn secondary" onclick="rollBoth()">🎲🪙 Бросить всё</button>
+
+        <div class="result hidden" id="randomResult"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   ВКЛАДКИ
+============================================================ */
+function showTab(name, e) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+
+  if (name === 'iq' && document.querySelectorAll('.iq-question').length === 0) startIQ();
+}
+
+/* ============================================================
+   ГАДАЛКА
+============================================================ */
+const TAROT_CARDS = [
+  { icon: '☀️', name: 'Солнце', meaning: 'Успех, радость, удача ждут тебя впереди.' },
+  { icon: '🌙', name: 'Луна', meaning: 'Интуиция подскажет верный путь. Доверься снам.' },
+  { icon: '⭐', name: 'Звезда', meaning: 'Надежда и вдохновение. Твоя мечта сбудется.' },
+  { icon: '❤️', name: 'Влюблённые', meaning: 'Гармония в отношениях, любовь, взаимопонимание.' },
+  { icon: '🎯', name: 'Колесница', meaning: 'Победа и триумф. Действуй смело!' },
+  { icon: '⚖️', name: 'Справедливость', meaning: 'Правда восторжествует. Всё по заслугам.' },
+  { icon: '🦁', name: 'Сила', meaning: 'Внутренняя сила и мужество. Ты справишься.' },
+  { icon: '🕊️', name: 'Мир', meaning: 'Гармония и покой. Всё идёт по плану.' },
+  { icon: '👑', name: 'Император', meaning: 'Стабильность и порядок. Ты под защитой.' },
+  { icon: '🎭', name: 'Шут', meaning: 'Новые приключения! Не бойся рискнуть.' },
+  { icon: '🗝️', name: 'Жрица', meaning: 'Тайные знания откроются. Слушай интуицию.' },
+  { icon: '⚡', name: 'Башня', meaning: 'Перемены близко. Но после — лучшее.' },
+  { icon: '🌸', name: 'Императрица', meaning: 'Изобилие, творчество, женская энергия.' },
+  { icon: '🔥', name: 'Суд', meaning: 'Пробуждение, новый этап жизни.' },
+  { icon: '🌈', name: 'Умеренность', meaning: 'Баланс и гармония. Всё в меру.' }
+];
+
+let currentTarotCard = null;
+
+function drawTarot() {
+  currentTarotCard = TAROT_CARDS[Math.floor(Math.random() * TAROT_CARDS.length)];
+  const card = document.getElementById('tarotCard');
+  const question = document.getElementById('tarotQuestion').value.trim();
+
+  card.classList.remove('flipped');
+
+  setTimeout(() => {
+    document.getElementById('tarotIcon').textContent = currentTarotCard.icon;
+    document.getElementById('tarotName').textContent = currentTarotCard.name;
+    document.getElementById('tarotMeaning').textContent = currentTarotCard.meaning;
+    card.classList.add('flipped');
+  }, 200);
+}
+
+function flipTarot() {
+  if (currentTarotCard) {
+    document.getElementById('tarotCard').classList.toggle('flipped');
+  } else {
+    drawTarot();
+  }
+}
+
+/* ============================================================
+   IQ ТЕСТ
+============================================================ */
+const IQ_QUESTIONS = [
+  {
+    q: 'Продолжи последовательность: 2, 4, 8, 16, ...',
+    options: ['24', '32', '30', '64'],
+    correct: 1
+  },
+  {
+    q: 'Если Аня старше Бориса, а Борис старше Вани, кто самый младший?',
+    options: ['Аня', 'Борис', 'Ваня', 'Нельзя определить'],
+    correct: 2
+  },
+  {
+    q: 'Сколько будет 15% от 200?',
+    options: ['25', '30', '35', '40'],
+    correct: 1
+  },
+  {
+    q: 'Что не является животным?',
+    options: ['Кот', 'Собака', 'Дерево', 'Корова'],
+    correct: 2
+  },
+  {
+    q: 'Найди лишнее: яблоко, груша, морковь, банан',
+    options: ['Яблоко', 'Груша', 'Морковь', 'Банан'],
+    correct: 2
+  },
+  {
+    q: 'Если 5 машин за 5 минут делают 5 деталей, сколько деталей сделают 10 машин за 10 минут?',
+    options: ['10', '20', '50', '100'],
+    correct: 1
+  },
+  {
+    q: 'Продолжи: 1, 1, 2, 3, 5, 8, ...',
+    options: ['11', '12', '13', '15'],
+    correct: 2
+  },
+  {
+    q: 'Что тяжелее: 1 кг ваты или 1 кг железа?',
+    options: ['Вата', 'Железо', 'Одинаково', 'Зависит'],
+    correct: 2
+  },
+  {
+    q: 'Сколько углов у треугольника?',
+    options: ['2', '3', '4', '5'],
+    correct: 1
+  },
+  {
+    q: 'Если сегодня вторник, какой день будет через 3 дня?',
+    options: ['Четверг', 'Пятница', 'Суббота', 'Воскресенье'],
+    correct: 1
+  }
+];
+
+let iqAnswers = [];
+
+function startIQ() {
+  iqAnswers = new Array(IQ_QUESTIONS.length).fill(null);
+  const container = document.getElementById('iqQuestions');
+  container.innerHTML = '';
+  document.getElementById('iqResult').classList.add('hidden');
+
+  IQ_QUESTIONS.forEach((q, qi) => {
+    const qEl = document.createElement('div');
+    qEl.className = 'iq-question';
+    qEl.innerHTML = `<div class="q-text">${qi + 1}. ${q.q}</div>`;
+
+    const optEl = document.createElement('div');
+    optEl.className = 'options';
+    q.options.forEach((opt, oi) => {
+      const btn = document.createElement('button');
+      btn.className = 'iq-option';
+      btn.textContent = opt;
+      btn.onclick = () => selectIQAnswer(qi, oi, qEl);
+      optEl.appendChild(btn);
+    });
+
+    qEl.appendChild(optEl);
+    container.appendChild(qEl);
+  });
+}
+
+function selectIQAnswer(qi, oi, qEl) {
+  iqAnswers[qi] = oi;
+  qEl.querySelectorAll('.iq-option').forEach((b, i) => {
+    b.classList.toggle('selected', i === oi);
+    b.classList.remove('correct', 'wrong');
+  });
+}
+
+function submitIQ() {
+  if (iqAnswers.includes(null)) {
+    alert('⚠ Ответь на все вопросы!');
+    return;
+  }
+
+  let correct = 0;
+  const questions = document.querySelectorAll('.iq-question');
+  questions.forEach((qEl, qi) => {
+    const opts = qEl.querySelectorAll('.iq-option');
+    opts.forEach((b, oi) => {
+      b.classList.remove('selected');
+      if (oi === IQ_QUESTIONS[qi].correct) {
+        b.classList.add('correct');
+        if (iqAnswers[qi] === oi) correct++;
+      } else if (iqAnswers[qi] === oi) {
+        b.classList.add('wrong');
+      }
+    });
+  });
+
+  const percent = Math.round((correct / IQ_QUESTIONS.length) * 100);
+  let verdict = '';
+  if (percent >= 90) verdict = '🏆 Гений!';
+  else if (percent >= 70) verdict = '🌟 Отличный результат!';
+  else if (percent >= 50) verdict = '👍 Хорошо!';
+  else if (percent >= 30) verdict = '😅 Нужно потренироваться';
+  else verdict = '📚 Есть куда расти';
+
+  const result = document.getElementById('iqResult');
+  result.classList.remove('hidden');
+  result.classList.add('big');
+  result.textContent = `${verdict}\n\nПравильно: ${correct} из ${IQ_QUESTIONS.length}\nРезультат: ${percent}%`;
+  result.scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ============================================================
+   ГОРОСКОП
+============================================================ */
+const ZODIAC = [
+  { icon: '♈', name: 'Овен', dates: '21.03—19.04' },
+  { icon: '♉', name: 'Телец', dates: '20.04—20.05' },
+  { icon: '♊', name: 'Близнецы', dates: '21.05—20.06' },
+  { icon: '♋', name: 'Рак', dates: '21.06—22.07' },
+  { icon: '♌', name: 'Лев', dates: '23.07—22.08' },
+  { icon: '♍', name: 'Дева', dates: '23.08—22.09' },
+  { icon: '♎', name: 'Весы', dates: '23.09—22.10' },
+  { icon: '♏', name: 'Скорпион', dates: '23.10—21.11' },
+  { icon: '♐', name: 'Стрелец', dates: '22.11—21.12' },
+  { icon: '♑', name: 'Козерог', dates: '22.12—19.01' },
+  { icon: '♒', name: 'Водолей', dates: '20.01—18.02' },
+  { icon: '♓', name: 'Рыбы', dates: '19.02—20.03' }
+];
+
+const HOROSCOPE_TEMPLATES = [
+  'Сегодня звёзды на твоей стороне! Удача ждёт тебя в неожиданном месте. Будь смелее.',
+  'Отличный день для новых начинаний. То, что ты откладывал — наконец свершится.',
+  'Тебя ждёт приятная неожиданность. Возможно, от старого друга.',
+  'День подходит для творчества. Займись любимым делом — получишь удовольствие.',
+  'Будь внимательнее к деталям. Мелочь может изменить весь день в лучшую сторону.',
+  'Звёзды советуют отдохнуть. Не бери на себя слишком много.',
+  'Хороший день для учёбы. Твой мозг сегодня работает на 100%.',
+  'Сегодня легко найдутся общие темы с друзьями. Общение принесёт радость.',
+  'Прислушивайся к интуиции — она подскажет правильное решение.',
+  'День принесёт хорошие новости. Возможно, связанные с твоим увлечением.',
+  'Ты сегодня особенно привлекателен. Комплименты не заставят себя ждать.',
+  'Отличный момент, чтобы начать что-то новое. Всё получится!'
+];
+
+function renderZodiac() {
+  const grid = document.getElementById('zodiacGrid');
+  grid.innerHTML = '';
+  ZODIAC.forEach((z, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'zodiac-btn';
+    btn.innerHTML = `<div>${z.icon}</div><small>${z.name}</small>`;
+    btn.onclick = () => showHoroscope(i, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function showHoroscope(i, btn) {
+  document.querySelectorAll('.zodiac-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const z = ZODIAC[i];
+  const horoscope = HOROSCOPE_TEMPLATES[Math.floor(Math.random() * HOROSCOPE_TEMPLATES.length)];
+
+  const result = document.getElementById('horoscopeResult');
+  result.classList.remove('hidden');
+  result.classList.add('big');
+  result.innerHTML = `
+    <div style="font-size: 60px; margin-bottom: 12px;">${z.icon}</div>
+    <div style="font-size: 24px; font-weight: 900; color: #fbbf24; margin-bottom: 4px;">${z.name}</div>
+    <div style="font-size: 12px; color: #888; margin-bottom: 20px;">${z.dates}</div>
+    <div style="font-size: 16px; font-weight: 500; color: #e0e0f0; line-height: 1.6;">${horoscope}</div>
+  `;
+  result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ============================================================
+   ФАКТЫ
+============================================================ */
+const FACTS = [
+  '🐙 У осьминога три сердца и голубая кровь.',
+  '🍯 Мёд никогда не портится. Даже через 3000 лет он съедобен.',
+  '🌌 В космосе есть облако из спирта размером с целую солнечную систему.',
+  '🐌 У улитки около 25 000 зубов.',
+  '🦈 Акулы существуют дольше, чем деревья.',
+  '🌙 Луна удаляется от Земли на 3,8 см в год.',
+  '🐘 Слоны — единственные животные, которые не умеют прыгать.',
+  '🍌 Бананы — это ягоды, а малина — нет.',
+  '💎 Алмазы можно сжечь — при 800°C они горят.',
+  '🌊 Мы исследовали только 5% океанов.',
+  '🐝 Пчёлы могут узнавать лица людей.',
+  '🦒 У жирафа столько же шейных позвонков, сколько у человека — 7.',
+  '⚡ Молния в 5 раз горячее поверхности Солнца.',
+  '🎵 Музыка способна улучшать память и настроение.',
+  '🍫 Шоколад был валютой у ацтеков.',
+  '🐜 Муравьи могут поднимать в 50 раз больше собственного веса.',
+  '🌡️ Самая низкая температура на Земле: −89,2°C в Антарктиде.',
+  '🦋 Бабочки пробуют еду лапками.',
+  '👀 Человеческий глаз различает около 10 миллионов цветов.',
+  '🧠 Мозг потребляет 20% всей энергии тела.',
+  '🐧 Пингвины делают предложение, даря камешек.',
+  '🌻 Подсолнухи поворачиваются за солнцем.',
+  '📱 Первый смартфон появился в 1992 году.',
+  '🦴 У младенцев около 300 костей, у взрослых — 206.',
+  '🎮 Первая видеоигра появилась в 1958 году.'
+];
+
+function showRandomFact() {
+  const fact = FACTS[Math.floor(Math.random() * FACTS.length)];
+  const el = document.getElementById('factText');
+  el.textContent = fact;
+  el.style.animation = 'none';
+  setTimeout(() => {
+    el.style.animation = 'fadeIn 0.5s';
+  }, 10);
+}
+
+/* ============================================================
+   МЕМЫ
+============================================================ */
+const MEMES = [
+  { emoji: '😂', text: 'Когда понял, что завтра контрольная, а ты не готов' },
+  { emoji: '🤣', text: 'Я: сейчас лягу пораньше. Тоже я в 3 часа ночи: смотрю мемы' },
+  { emoji: '😭', text: 'Мама: убери телефон. Я: ещё 5 минут. Прошло 3 часа' },
+  { emoji: '💀', text: 'Когда сказал "щас" и забыл про это навсегда' },
+  { emoji: '🔥', text: 'Учитель: откройте учебник. Я: я забыл учебник дома' },
+  { emoji: '😎', text: 'Я в новой игре: сейчас покажу класс. Через 5 минут: как выйти?' },
+  { emoji: '🥶', text: 'Зимой вышел без шапки. Мама: заболеешь! Я: я сильный. Через день: 🤒' },
+  { emoji: '🤡', text: 'Я: сейчас сделаю уроки. Тоже я через 4 часа: что задали?' },
+  { emoji: '😴', text: 'Будильник: вставай! Я: 5 минуточек. Прошло: 2 часа' },
+  { emoji: '🙃', text: 'Когда выиграл в игре, но мама сказала "садись за уроки"' },
+  { emoji: '😅', text: 'Я сказал "я не буду это есть". Через 10 минут: ем это' },
+  { emoji: '🤯', text: 'Учитель: тема сегодняшнего урока... Я: а можно перемена?' },
+  { emoji: '😱', text: 'В школе сказали: принесите дневник. Я: а у меня его нет' },
+  { emoji: '🥳', text: 'Пятница! Наконец-то! Суббота: а уроки кто делать будет?' },
+  { emoji: '🤔', text: 'Когда понял, что в Роблоксе все в классе, а ты один не играешь' }
+];
+
+function generateMeme() {
+  const meme = MEMES[Math.floor(Math.random() * MEMES.length)];
+  document.getElementById('memeEmoji').textContent = meme.emoji;
+  document.getElementById('memeText').textContent = meme.text;
+}
+
+/* ============================================================
+   КУБИК И МОНЕТКА
+============================================================ */
+const DICE_FACES = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+const COIN_FACES = ['Орёл', 'Решка'];
+
+function rollDice() {
+  const dice = document.getElementById('diceDisplay');
+  const result = document.getElementById('randomResult');
+  let count = 0;
+  dice.classList.add('rolling');
+
+  const interval = setInterval(() => {
+    dice.textContent = DICE_FACES[Math.floor(Math.random() * 6)];
+    count++;
+    if (count > 10) {
+      clearInterval(interval);
+      dice.classList.remove('rolling');
+      const final = Math.floor(Math.random() * 6) + 1;
+      dice.textContent = DICE_FACES[final - 1];
+      result.classList.remove('hidden');
+      result.classList.add('big');
+      result.textContent = `🎲 Выпало: ${final}`;
+    }
+  }, 50);
+}
+
+function flipCoin() {
+  const coin = document.getElementById('coinDisplay');
+  const result = document.getElementById('randomResult');
+  coin.classList.add('flipping');
+
+  setTimeout(() => {
+    coin.classList.remove('flipping');
+    const final = COIN_FACES[Math.floor(Math.random() * 2)];
+    coin.textContent = final === 'Орёл' ? '🦅' : '💰';
+    result.classList.remove('hidden');
+    result.classList.add('big');
+    result.textContent = `🪙 Выпало: ${final}`;
+  }, 600);
+}
+
+function rollBoth() {
+  const result = document.getElementById('randomResult');
+  const dice = document.getElementById('diceDisplay');
+  const coin = document.getElementById('coinDisplay');
+
+  const d = Math.floor(Math.random() * 6) + 1;
+  const c = COIN_FACES[Math.floor(Math.random() * 2)];
+
+  dice.textContent = DICE_FACES[d - 1];
+  coin.textContent = c === 'Орёл' ? '🦅' : '💰';
+
+  result.classList.remove('hidden');
+  result.classList.add('big');
+  result.innerHTML = `🎲 Кубик: <strong>${d}</strong><br>🪙 Монетка: <strong>${c}</strong>`;
+}
+
+/* ============================================================
+   СТАРТ
+============================================================ */
+renderZodiac();
+startIQ();
+</script>
+</body>
+</html>

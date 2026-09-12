@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🤖 ИИ-Хаб PRO · 11 помощников</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23ff00ff'/%3E%3Cstop offset='100%25' stop-color='%2339ff14'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23g)'/%3E%3Ctext x='50%25' y='60%25' font-family='Arial,sans-serif' font-size='250' font-weight='900' fill='%23ffffff' text-anchor='middle' dominant-baseline='middle'%3E🤖%3C/text%3E%3C/svg%3E">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; }
+  body { background: linear-gradient(135deg, #0a0a14, #1a0a2d, #0a1a2d); color: #fff; }
+
+  .app { height: 100vh; display: flex; flex-direction: column; }
+
+  .topbar {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #1a0a2d, #0a1a2d);
+    border-bottom: 2px solid rgba(255,0,255,0.3);
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0; flex-wrap: wrap;
+  }
+  .logo {
+    width: 44px; height: 44px; border-radius: 14px;
+    background: linear-gradient(135deg, #ff00ff, #39ff14);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 0 20px rgba(255,0,255,0.6);
+  }
+  .logo-text h1 {
+    font-size: 18px; font-weight: 900;
+    background: linear-gradient(135deg, #ff00ff, #39ff14, #00d4ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+  }
+  .logo-text p { font-size: 11px; color: #888; }
+
+  .status {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px; border-radius: 20px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    font-size: 12px;
+  }
+  .status .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #f87171;
+    animation: blink 1.5s infinite;
+  }
+  .status .dot.online { background: #39ff14; }
+  @keyframes blink { 50% { opacity: 0.3; } }
+
+  .back-btn {
+    padding: 9px 16px; border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.15);
+    color: #fff; font-size: 13px; font-weight: 700;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { background: rgba(255,0,255,0.25); border-color: #ff00ff; }
+
+  .layout { flex: 1; display: flex; overflow: hidden; }
+
+  .sidebar {
+    width: 280px; background: rgba(0,0,0,0.4);
+    border-right: 2px solid rgba(255,0,255,0.2);
+    padding: 14px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 8px;
+    flex-shrink: 0;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: rgba(255,0,255,0.5); border-radius: 3px; }
+
+  .sidebar h3 {
+    font-size: 11px; color: #888;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 8px 4px 4px;
+  }
+
+  .ai-item {
+    padding: 12px 14px; border-radius: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.08);
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 12px;
+    text-align: left;
+    position: relative;
+  }
+  .ai-item:hover { background: rgba(255,0,255,0.15); border-color: rgba(255,0,255,0.4); }
+  .ai-item.active {
+    background: linear-gradient(135deg, rgba(255,0,255,0.3), rgba(123,47,247,0.3));
+    border-color: #ff00ff;
+    box-shadow: 0 0 20px rgba(255,0,255,0.4);
+  }
+  .ai-item-icon { font-size: 26px; flex-shrink: 0; }
+  .ai-item-info { flex: 1; min-width: 0; }
+  .ai-item-name { font-size: 14px; font-weight: 800; margin-bottom: 2px; }
+  .ai-item-desc { font-size: 11px; color: #a0a0c0; line-height: 1.3; }
+  .ai-item-badge {
+    position: absolute; top: 6px; right: 8px;
+    font-size: 9px; padding: 2px 6px;
+    background: linear-gradient(135deg, #39ff14, #22c55e);
+    color: #000; border-radius: 6px;
+    font-weight: 900;
+  }
+  .ai-item-badge.new {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  }
+
+  .chat-area {
+    flex: 1; display: flex; flex-direction: column;
+    background: rgba(0,0,0,0.2); overflow: hidden;
+  }
+
+  .chat-header {
+    padding: 16px 24px;
+    background: rgba(0,0,0,0.4);
+    border-bottom: 2px solid rgba(255,0,255,0.2);
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+  }
+  .chat-header-icon { font-size: 32px; }
+  .chat-header-info { flex: 1; min-width: 0; }
+  .chat-header-info h2 { font-size: 17px; font-weight: 800; }
+  .chat-header-info p { font-size: 12px; color: #888; }
+  .clear-btn {
+    padding: 8px 14px; border-radius: 10px;
+    background: rgba(248,113,113,0.2);
+    border: 1px solid #f87171;
+    color: #f87171; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .clear-btn:hover { background: #f87171; color: #fff; }
+
+  .messages {
+    flex: 1; overflow-y: auto;
+    padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .messages::-webkit-scrollbar { width: 8px; }
+  .messages::-webkit-scrollbar-thumb { background: rgba(255,0,255,0.5); border-radius: 4px; }
+
+  .msg {
+    max-width: 85%; padding: 14px 18px;
+    border-radius: 18px; font-size: 15px;
+    line-height: 1.6; word-wrap: break-word;
+    animation: fadeIn 0.3s;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .msg.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #ff00ff, #7b2ff7);
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 15px rgba(255,0,255,0.4);
+    white-space: pre-wrap;
+  }
+  .msg.bot {
+    align-self: flex-start;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-bottom-left-radius: 4px;
+    white-space: pre-wrap;
+    max-width: 95%;
+  }
+  .msg.bot.typing::after {
+    content: '▋';
+    animation: blink 1s infinite;
+    color: #39ff14;
+  }
+  .msg.error {
+    background: rgba(248,113,113,0.15);
+    border-color: #f87171;
+    color: #f87171;
+  }
+
+  /* БЛОКИ КОДА */
+  .code-block {
+    margin: 12px 0;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255,0,255,0.3);
+    background: #0d0d1a;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  .code-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.5);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 12px; color: #a0a0c0;
+  }
+  .code-head .lang {
+    color: #39ff14; font-weight: 700;
+    text-transform: lowercase;
+    font-family: monospace;
+  }
+  .code-head .btns { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+  .code-btn {
+    padding: 5px 12px; border-radius: 8px; font-size: 11px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #e0e0f0; cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .code-btn:hover { background: rgba(255,0,255,0.4); color: #fff; }
+  .code-btn.ok {
+    background: rgba(57,255,20,0.3);
+    border-color: #39ff14;
+    color: #39ff14;
+  }
+  .code-block pre {
+    margin: 0; padding: 16px;
+    overflow-x: auto;
+    font-size: 13px; line-height: 1.6;
+    background: #0d0d1a;
+    max-height: 500px;
+    overflow-y: auto;
+    color: #e0e0f0;
+    font-family: 'Consolas', 'Monaco', monospace;
+  }
+  .code-block pre::-webkit-scrollbar { width: 8px; height: 8px; }
+  .code-block pre::-webkit-scrollbar-thumb { background: rgba(255,0,255,0.5); border-radius: 4px; }
+
+  /* Форматирование текста в ответах */
+  .msg.bot strong { color: #39ff14; font-weight: 800; }
+  .msg.bot em { color: #00d4ff; font-style: italic; }
+  .msg.bot code {
+    background: rgba(255,0,255,0.15);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+    color: #ff00ff;
+  }
+
+  .input-area {
+    padding: 14px 20px;
+    background: rgba(0,0,0,0.5);
+    border-top: 2px solid rgba(255,0,255,0.2);
+    display: flex; gap: 12px; align-items: flex-end;
+    flex-shrink: 0;
+  }
+  .input-area textarea {
+    flex: 1; resize: none;
+    padding: 14px 18px;
+    border-radius: 16px;
+    border: 2px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: #fff; font-size: 15px;
+    outline: none; font-family: inherit;
+    max-height: 150px; min-height: 52px;
+  }
+  .input-area textarea:focus { border-color: #ff00ff; }
+  .send-btn {
+    width: 52px; height: 52px; border-radius: 16px;
+    border: none;
+    background: linear-gradient(135deg, #ff00ff, #7b2ff7);
+    color: #fff; font-size: 22px;
+    cursor: pointer; flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(255,0,255,0.5);
+    transition: all 0.2s;
+  }
+  .send-btn:hover { transform: scale(1.05); }
+  .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .send-btn.stop { background: linear-gradient(135deg, #f87171, #dc2626); }
+
+  .quick-prompts {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    padding: 0 20px 12px;
+  }
+  .quick-btn {
+    padding: 7px 14px; border-radius: 20px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #c0c0e0; font-size: 12px;
+    cursor: pointer; transition: all 0.2s;
+    font-family: inherit;
+  }
+  .quick-btn:hover { background: rgba(255,0,255,0.3); color: #fff; border-color: #ff00ff; }
+
+  .menu-btn {
+    display: none;
+    width: 44px; height: 44px; border-radius: 12px;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.15);
+    color: #fff; font-size: 18px;
+    cursor: pointer; align-items: center; justify-content: center;
+  }
+
+  @media (max-width: 800px) {
+    .sidebar {
+      position: absolute; top: 68px; left: 0;
+      width: 100%; height: calc(100vh - 68px);
+      z-index: 100;
+      transform: translateX(-100%);
+      transition: transform 0.3s;
+    }
+    .sidebar.open { transform: translateX(0); }
+    .menu-btn { display: flex; }
+    .logo-text h1 { font-size: 14px; }
+    .status { display: none; }
+    .msg { max-width: 95%; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="logo">🤖</div>
+    <div class="logo-text">
+      <h1>ИИ-ХАБ PRO · 11 помощников</h1>
+      <p>Работает через LM Studio + Qwen</p>
+    </div>
+    <div class="status">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">Проверка...</span>
+    </div>
+    <a class="back-btn" href="2test.html">← В портал</a>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar" id="sidebar">
+      <h3>Выбери помощника</h3>
+
+      <button class="ai-item active" data-ai="translator" onclick="selectAI('translator')">
+        <div class="ai-item-icon">🌐</div>
+        <div class="ai-item-info">
+          <div class="ai-item-name">Переводчик</div>
+          <div class="ai-item-desc">Переводит на любые языки</div>
+        </div>
+      </button>
+
+      <button class="ai-item" data-ai="poet" onclick="selectAI('poet')">
+        <div class="ai-item-icon">✍️</div>
+        <div class="ai-item-info">
+          <div class="ai-item-name">Поэт</div>
+          <div class="ai-item-desc">Стихи до 500 слов</div>
+        </div>
+        <span class="ai-item-badge">500</span>
+      </button>
+
+      <button class="ai-item" data-ai="storyteller" onclick="selectAI('storyteller')">
+        <div class="ai-item-icon">📖</div>
+        <div class="ai-item-info">
+          <div class="ai-item-name">Сказочник</div>
+          <div class="ai-item-desc">Детские истории</div>
+        </div>
+      </button>
+
+      <button class="ai-item" data-ai="judge" onclick="selectAI('judge')">
+        <div class="ai-item-icon">⚖️</div>
+        <div class="ai-item-info">
+          <div class="ai-item-name">Судья</div>
+          <div class="ai-item-desc">Рассуждает и спорит</div>
+        </div>
+      </button>
+
+      <button class="ai-item" data-ai="teacher" onclick="selectAI('teacher')">
+        <div class="ai-item-icon">🎓</div>
+        <div class="ai-item-info">
+          <div class="ai-item-name">Учитель</div>
+          <div class="ai-item-desc">Объясняет учёбу</div>
+        </div>
+      </button>
+
+      <button class="ai-item" data-ai="psychologist" onclick="selectAI('psychologist')">
+        <div class="ai-item-icon">💚</div>
+        <div class="ai-item-info">
+          <div class="ai-item-name">Психолог</div>
+          <div class="ai-item-desc">Поддержит и выслушает</div>
+        </div>
+      </button>
+
+      <button class="ai-item" data-ai="comedian" onclick="selectAI('comedian')">
+        <div class="ai-item-icon">😂</div>
+        <div class="ai-item-info">
+          <div class="ai-item-name">Анекдотчик</div>
+          <div class="ai-item-desc">Шутит и развлекает</div>
+        </div>
+      </button>
+
+      <button class="ai-item" data-ai="coder" onclick="selectAI('coder')">
+        <div class="ai-item-icon">💻</div>
+        <div class="ai-item-info">
+          <div class="ai-item-name">Кодер</div>
+          <div class="ai-item-desc">Пишет код с кнопками</div>
+        </div>
+        <span class="ai-item-badge new">NEW</span>
+      </button>
+
+      <button class="ai-item" data-ai="advisor" onclick="selectAI('advisor')">
+        <div class="ai-item-icon">🧭</div>
+        <div class="ai-item-info">
+          <div class="ai-item-name">Советчик</div>
+          <div class="ai-item-desc">Даёт мудрые советы</div>
+        </div>
+        <span class="ai-item-badge new">NEW</span>
+      </button>
+
+      <button class="ai-item" data-ai="fantasist" onclick="selectAI('fantasist')">
+        <div class="ai-item-icon">🚀</div>
+        <div class="ai-item-info">
+          <div class="ai-item-name">Фантазёр</div>
+          <div class="ai-item-desc">Придумывает идеи</div>
+        </div>
+        <span class="ai-item-badge new">NEW</span>
+      </button>
+
+      <button class="ai-item" data-ai="predictor" onclick="selectAI('predictor')">
+        <div class="ai-item-icon">🔮</div>
+        <div class="ai-item-info">
+          <div class="ai-item-name">Предсказатель</div>
+          <div class="ai-item-desc">Предсказывает будущее</div>
+        </div>
+        <span class="ai-item-badge new">NEW</span>
+      </button>
+
+    </div>
+
+    <div class="chat-area">
+      <div class="chat-header">
+        <div class="chat-header-icon" id="chatIcon">🌐</div>
+        <div class="chat-header-info">
+          <h2 id="chatTitle">Переводчик</h2>
+          <p id="chatDesc">Переводит на любые языки</p>
+        </div>
+        <button class="clear-btn" onclick="clearCurrentChat()">🗑 Очистить</button>
+      </div>
+
+      <div class="messages" id="messages"></div>
+
+      <div class="quick-prompts" id="quickPrompts"></div>
+
+      <div class="input-area">
+        <textarea id="input" rows="1" placeholder="Напиши сообщение..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send();}"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="send()">➤</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   КОНФИГУРАЦИЯ ИИ
+============================================================ */
+const AI_CONFIG = {
+  translator: {
+    icon: '🌐',
+    name: 'Переводчик',
+    desc: 'Переводит на любые языки',
+    system: `Ты — профессиональный переводчик. Переводи текст пользователя на указанный язык. Если язык не указан — переводи на английский. Отвечай ТОЛЬКО переводом, без пояснений. Если возможны разные варианты (формальный/неформальный) — давай оба через /. Сохраняй смысл и стиль оригинала.`,
+    quick: ['Переведи на английский: Привет, как дела?', 'Переведи на немецкий: Я люблю программирование', 'Переведи на японский: Спасибо большое', 'Переведи на французский: До свидания', 'Переведи на испанский: Доброе утро'],
+    placeholder: 'Напиши: "Переведи на английский: ..."'
+  },
+  poet: {
+    icon: '✍️',
+    name: 'Поэт',
+    desc: 'Пишет стихи до 500 слов',
+    system: `Ты — гениальный русский поэт. Пиши красивые стихи в рифму на любую тему.
+
+ПРАВИЛА:
+1. Стихи в рифму и с чётким ритмом.
+2. Минимум 3 четверостишия, максимум 500 слов (если попросят).
+3. Эпитеты, метафоры, сравнения.
+4. Разные размеры: ямб, хорей, дактиль.
+5. Разные стили: Пушкин, современный, рэп, хокку.
+6. НЕ пиши объяснений — только стихи.`,
+    quick: ['Стих про осень (длинный)', 'Стих про любовь', 'Стих про дружбу', 'Максимально длинный стих про море', 'Стих про кота', 'Стих про школу', 'Стих про Роблокс', 'Стих в стиле Пушкина'],
+    placeholder: 'Назови тему — напишу стих (до 500 слов)'
+  },
+  storyteller: {
+    icon: '📖',
+    name: 'Сказочник',
+    desc: 'Детские истории',
+    system: `Ты — добрый сказочник для детей 5-10 лет. Пиши короткие (7-10 предложений) добрые истории с happy end.
+
+ПРАВИЛА:
+1. Герои — дети, животные, волшебные существа.
+2. Мораль добрая: дружба, доброта, смелость, честность.
+3. Простой язык, понятный детям.
+4. Волшебство и приключения.
+5. Начинай "Жили-были..." или "Однажды...".
+6. Заканчивай "И стали они жить-поживать..." или моралью.`,
+    quick: ['Сказка про зайчика', 'Сказка про дракона', 'Сказка про принцессу', 'Сказка про робота', 'Сказка про звёздочку', 'Сказка про котёнка'],
+    placeholder: 'Про кого придумать сказку?'
+  },
+  judge: {
+    icon: '⚖️',
+    name: 'Судья',
+    desc: 'Рассуждает и спорит',
+    system: `Ты — мудрый судья. Рассматривай вопрос со всех сторон.
+
+СТРУКТУРА:
+⚖️ СУТЬ ВОПРОСА: (1-2 предложения)
+✅ АРГУМЕНТЫ ЗА: (минимум 3 пункта)
+❌ АРГУМЕНТЫ ПРОТИВ: (минимум 3 пункта)
+💡 АЛЬТЕРНАТИВНЫЙ ВЗГЛЯД: (неожиданный ракурс)
+🎯 ВЕРДИКТ: (краткий вывод)
+
+Будь объективным. Приводи логические доводы, примеры. Не осуждай.`,
+    quick: ['Что лучше: книги или фильмы?', 'Кто сильнее: кот или собака?', 'Правда ли, что деньги решают всё?', 'Стоит ли учиться программированию?', 'Что важнее: ум или красота?'],
+    placeholder: 'Задай вопрос для разбирательства...'
+  },
+  teacher: {
+    icon: '🎓',
+    name: 'Учитель',
+    desc: 'Объясняет учёбу',
+    system: `Ты — добрый учитель. Объясняй темы просто, с примерами.
+
+СТРУКТУРА:
+📚 ЧТО ЭТО?
+⚙️ КАК РАБОТАЕТ?
+🌍 ПРИМЕР ИЗ ЖИЗНИ
+💡 ЗАЧЕМ НУЖНО?
+❓ ПРОВЕРЬ СЕБЯ
+
+Правила:
+- Для ученика 6 класса.
+- Максимум 10-12 предложений.
+- Аналогии ("это как...").
+- Простые термины.`,
+    quick: ['Объясни теорему Пифагора', 'Что такое фотосинтез?', 'Как работает электричество?', 'Что такое дроби?', 'Почему идёт дождь?', 'Что такое гравитация?'],
+    placeholder: 'Что объяснить?'
+  },
+  psychologist: {
+    icon: '💚',
+    name: 'Психолог',
+    desc: 'Поддержит и выслушает',
+    system: `Ты — чуткий психолог. Поддерживаешь, слушаешь, не осуждаешь.
+
+ПРАВИЛА:
+1. Сначала ВЫСЛУШАЙ и ПОЙМИ чувства.
+2. Начни с "Я тебя слышу", "Понимаю тебя".
+3. Поддержи теплом и эмодзи (💚🤗✨🌸).
+4. Потом мягкие советы (2-3).
+5. Не осуждай, не критикуй.
+6. Задавай уточняющие вопросы.
+7. Если опасность — посоветуй обратиться к взрослому.`,
+    quick: ['Я устал от школы', 'Меня никто не понимает', 'У меня плохое настроение', 'Как справиться со стрессом?', 'Я поссорился с другом'],
+    placeholder: 'Расскажи, что тебя беспокоит...'
+  },
+  comedian: {
+    icon: '😂',
+    name: 'Анекдотчик',
+    desc: 'Шутит и развлекает',
+    system: `Ты — весёлый анекдотчик. Шути и поднимай настроение.
+
+ПРАВИЛА:
+1. Короткие анекдоты (2-4 предложения).
+2. Темы: школа, коты, программисты, мемы, Роблокс, родители, учителя.
+3. Без пошлых и обидных шуток.
+4. Эмодзи: 😂🤣😄😹🔥
+5. Давай 3 разных анекдота сразу.
+6. Будь позитивным.`,
+    quick: ['Анекдот про школу', 'Анекдот про кота', 'Анекдот про программиста', 'Шутка про Роблокс', 'Случайный анекдот', 'Анекдот про учителя'],
+    placeholder: 'Попроси анекдот на тему...'
+  },
+  coder: {
+    icon: '💻',
+    name: 'Кодер',
+    desc: 'Пишет код с кнопками',
+    system: `Ты — опытный программист. Пиши ЧИСТЫЙ РАБОЧИЙ код без ошибок.
+
+ЖЕЛЕЗНЫЕ ПРАВИЛА:
+1. ВСЕГДА оборачивай код в блоки с указанием языка:
+\`\`\`python
+print("Привет")
+\`\`\`
+2. Комментируй ключевые строки.
+3. Пиши ПОЛНЫЙ код, чтобы можно было СРАЗУ скопировать и запустить.
+4. Если код большой — разбивай на несколько блоков.
+5. Если пользователь просит HTML — пиши HTML с CSS и JS в одном файле.
+6. Если Python — пиши так, чтобы запускался.
+7. Если JavaScript — пиши так, чтобы работал в браузере.
+8. Для Roblox — используй Luau (Roblox Lua).
+9. После КАЖДОГО блока кода — краткое объяснение на 1-3 предложения.
+10. НИКОГДА не пиши "как я понимаю" или "возможно" — только рабочий код.
+11. Если задача непонятна — задай уточняющий вопрос.
+
+Ты лучший программист. Твой код должен работать с первого раза.`,
+    quick: ['Напиши игру Змейка на HTML+JS', 'Функция Python для сортировки', 'Сайт-визитка на HTML', 'Скрипт для Roblox: телепорт', 'Как сделать кнопку с анимацией?', 'Как подключить API?', 'Напиши калькулятор на Python', 'Напиши чат-бота на JavaScript'],
+    placeholder: 'Что за код нужен? Язык и задача...'
+  },
+  advisor: {
+    icon: '🧭',
+    name: 'Советчик',
+    desc: 'Даёт мудрые советы',
+    system: `Ты — мудрый советчик. Даёшь практичные советы.
+
+ПРАВИЛА:
+1. Пойми суть вопроса.
+2. Дай 3-5 КОНКРЕТНЫХ советов.
+3. Каждый совет с примером.
+4. Учитывай возраст.
+5. Будь честным, но тактичным.
+6. Не осуждай.
+7. Мотивирующая концовка.
+
+Структура:
+🎯 СУТЬ
+💡 СОВЕТ 1
+💡 СОВЕТ 2
+💡 СОВЕТ 3
+✨ ИТОГ`,
+    quick: ['Как начать программировать?', 'Как не лениться?', 'Как найти друзей?', 'Как подготовиться к контрольной?', 'Как стать популярным в школе?'],
+    placeholder: 'Спроси совета на любую тему...'
+  },
+  fantasist: {
+    icon: '🚀',
+    name: 'Фантазёр',
+    desc: 'Придумывает идеи',
+    system: `Ты — генератор идей. Придумывай креативные, неожиданные идеи.
+
+ПРАВИЛА:
+1. Давай 5-10 идей сразу.
+2. Идеи РАЗНЫЕ, не повторяются.
+3. От простых до безумных.
+4. Каждая идея — 1-2 предложения.
+5. Фантазируй: космос, будущее, магия, роботы.
+6. Эмодзи для яркости.
+
+Формат:
+🚀 Тема: ...
+1️⃣ Идея
+2️⃣ Идея
+...
+💡 Бонус-идея: (самая безумная)`,
+    quick: ['Придумай игру для Roblox', 'Идеи для видео на YouTube', 'Придумай суперспособность', 'Идеи для рисунка', 'Придумай нового мема', 'Идея для сайта'],
+    placeholder: 'Дай тему — накидаю идеи...'
+  },
+  predictor: {
+    icon: '🔮',
+    name: 'Предсказатель',
+    desc: 'Предсказывает будущее',
+    system: `Ты — загадочный предсказатель. Даёшь игровые предсказания на будущее (это игра, не серьёзно).
+
+ПРАВИЛА:
+1. Предсказания ДОБРЫЕ и позитивные (это игра!).
+2. Можно шуточные, весёлые, фантастические.
+3. Структура: 
+🔮 ЗВЁЗДЫ ГОВОРЯТ...
+✨ ПРЕДСКАЗАНИЕ НА ДЕНЬ
+🌟 ПРЕДСКАЗАНИЕ НА НЕДЕЛЮ
+💫 ПРЕДСКАЗАНИЕ НА ГОД
+🍀 ТАЛИСМАН УДАЧИ
+4. Используй эмодзи: 🔮✨🌟💫🍀🎴
+5. Загадочный, но добрый тон.
+6. НИКАКИХ плохих предсказаний.
+
+Это развлекательный ИИ — не воспринимай серьёзно.`,
+    quick: ['Предскажи мой день', 'Что меня ждёт в школе?', 'Предскажи на неделю', 'Предскажи на год', 'Случайное предсказание'],
+    placeholder: 'Спроси о будущем...'
+  }
+};
+
+/* ============================================================
+   СОСТОЯНИЕ
+============================================================ */
+let currentAI = 'translator';
+let isGenerating = false;
+let abortController = null;
+let chatHistories = {};
+let autoScrollEnabled = true;
+
+const STORAGE_KEY = 'ai_hub_v2_histories';
+const LM_URL = 'http://localhost:1234/v1/chat/completions';
+const LM_MODELS_URL = 'http://localhost:1234/v1/models';
+
+/* ============================================================
+   СОХРАНЕНИЕ / ЗАГРУЗКА
+============================================================ */
+function loadHistories() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) chatHistories = JSON.parse(raw);
+  } catch (e) { chatHistories = {}; }
+}
+
+function saveHistories() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(chatHistories));
+  } catch (e) { console.warn('Ошибка сохранения', e); }
+}
+
+/* ============================================================
+   ПРОВЕРКА СЕРВЕРА
+============================================================ */
+async function checkServer() {
+  const dot = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  try {
+    const res = await fetch(LM_MODELS_URL);
+    if (res.ok) {
+      dot.classList.add('online');
+      text.textContent = 'LM Studio онлайн';
+    } else {
+      dot.classList.remove('online');
+      text.textContent = 'LM Studio не отвечает';
+    }
+  } catch (e) {
+    dot.classList.remove('online');
+    text.textContent = 'LM Studio выключен';
+  }
+}
+checkServer();
+setInterval(checkServer, 10000);
+
+/* ============================================================
+   ВЫБОР ИИ
+============================================================ */
+function selectAI(ai) {
+  saveHistories();
+  currentAI = ai;
+  const config = AI_CONFIG[ai];
+
+  document.querySelectorAll('.ai-item').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.ai-item[data-ai="${ai}"]`).classList.add('active');
+
+  document.getElementById('chatIcon').textContent = config.icon;
+  document.getElementById('chatTitle').textContent = config.name;
+  document.getElementById('chatDesc').textContent = config.desc;
+  document.getElementById('input').placeholder = config.placeholder;
+
+  const quickEl = document.getElementById('quickPrompts');
+  quickEl.innerHTML = '';
+  config.quick.forEach(q => {
+    const btn = document.createElement('button');
+    btn.className = 'quick-btn';
+    btn.textContent = q;
+    btn.onclick = () => { document.getElementById('input').value = q; send(); };
+    quickEl.appendChild(btn);
+  });
+
+  renderHistory(ai);
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+function renderHistory(ai) {
+  const messages = document.getElementById('messages');
+  messages.innerHTML = '';
+
+  if (!chatHistories[ai]) {
+    chatHistories[ai] = [
+      { role: 'system', content: AI_CONFIG[ai].system }
+    ];
+  }
+
+  // Показываем все сообщения кроме system
+  let hasMessages = false;
+  chatHistories[ai].forEach(m => {
+    if (m.role === 'system') return;
+    hasMessages = true;
+    const who = m.role === 'user' ? 'user' : 'bot';
+    renderMessage(m.content, who);
+  });
+
+  if (!hasMessages) {
+    const el = addMsg(AI_CONFIG[ai].icon + ' ' + AI_CONFIG[ai].name + ' на связи!\n\n' + getWelcome(ai), 'bot');
+  }
+}
+
+function renderMessage(text, who) {
+  const messages = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + who;
+  div.innerHTML = formatText(text);
+  messages.appendChild(div);
+  return div;
+}
+
+/* ============================================================
+   ФОРМАТИРОВАНИЕ — Markdown + блоки кода
+============================================================ */
+function formatText(text) {
+  if (!text) return '';
+
+  // Экранируем HTML
+  let html = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  // Блоки кода ```
+  html = html.replace(/```(\w*)\n?([\s\S]*?)```/g, (match, lang, code) => {
+    const codeId = 'code-' + Math.random().toString(36).slice(2, 9);
+    const language = lang || 'code';
+    const cleanCode = code.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
+
+    return `
+      <div class="code-block" data-code-id="${codeId}">
+        <div class="code-head">
+          <span class="lang">${language}</span>
+          <div class="btns">
+            <button class="code-btn" data-action="copy" data-code-id="${codeId}">📋 Копировать</button>
+            <button class="code-btn" data-action="download" data-code-id="${codeId}" data-lang="${language}">⬇️ Скачать</button>
+            <button class="code-btn" data-action="run" data-code-id="${codeId}" data-lang="${language}">▶️ Запустить</button>
+          </div>
+        </div>
+        <pre id="${codeId}">${code.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')}</pre>
+      </div>
+    `;
+  });
+
+  // Inline код `code`
+  html = html.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+
+  // Жирный **text**
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+  // Курсив *text*
+  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+  return html;
+}
+
+/* ============================================================
+   ОБРАБОТЧИК КНОПОК КОДА
+============================================================ */
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.code-btn');
+  if (!btn) return;
+
+  const action = btn.dataset.action;
+  const codeId = btn.dataset.codeId;
+  const lang = btn.dataset.lang;
+  const pre = document.getElementById(codeId);
+  if (!pre) return;
+
+  const code = pre.textContent;
+
+  if (action === 'copy') {
+    navigator.clipboard.writeText(code).then(() => {
+      btn.textContent = '✅ Скопировано';
+      btn.classList.add('ok');
+      setTimeout(() => {
+        btn.textContent = '📋 Копировать';
+        btn.classList.remove('ok');
+      }, 1500);
+    }).catch(() => {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      btn.textContent = '✅ Скопировано';
+      setTimeout(() => btn.textContent = '📋 Копировать', 1500);
+    });
+  } else if (action === 'download') {
+    const exts = {
+      html: 'html', css: 'css', javascript: 'js', js: 'js',
+      python: 'py', py: 'py', java: 'java', cpp: 'cpp', c: 'c',
+      lua: 'lua', luau: 'lua', json: 'json', xml: 'xml',
+      bash: 'sh', sh: 'sh', php: 'php', ruby: 'rb', go: 'go',
+      rust: 'rs', rs: 'rs', typescript: 'ts', ts: 'ts'
+    };
+    const ext = exts[(lang || '').toLowerCase()] || 'txt';
+    const blob = new Blob([code], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'code-' + Date.now() + '.' + ext;
+    a.click();
+    btn.textContent = '✅ Скачано';
+    btn.classList.add('ok');
+    setTimeout(() => {
+      btn.textContent = '⬇️ Скачать';
+      btn.classList.remove('ok');
+    }, 1500);
+  } else if (action === 'run') {
+    const lowerLang = (lang || '').toLowerCase();
+    if (lowerLang === 'html') {
+      // Открываем HTML в новой вкладке
+      const w = window.open('', '_blank');
+      w.document.write(code);
+      w.document.close();
+    } else if (lowerLang === 'javascript' || lowerLang === 'js') {
+      // Запускаем JS
+      try {
+        const result = eval(code);
+        const w = window.open('', '_blank');
+        w.document.write('<html><head><title>Результат JS</title><style>body{background:#1a1a2e;color:#fff;font-family:monospace;padding:20px;}pre{background:#0d0d1a;padding:15px;border-radius:8px;color:#39ff14;}</style></head><body><h2>Результат:</h2><pre>' + (result !== undefined ? result : 'выполнено (см. консоль)') + '</pre></body></html>');
+        console.log(result);
+      } catch (err) {
+        alert('Ошибка JS: ' + err.message);
+      }
+    } else if (lowerLang === 'python' || lowerLang === 'py') {
+      alert('⚠ Python нельзя запустить прямо в браузере.\n\nСкачай файл и запусти через Python.');
+    } else {
+      alert('⚠ Язык "' + lang + '" нельзя запустить в браузере.\n\nСкачай файл и запусти в своей среде.');
+    }
+  }
+});
+
+/* ============================================================
+   СООБЩЕНИЯ
+============================================================ */
+function addMsg(text, who, isTyping = false) {
+  const messages = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + who + (isTyping ? ' typing' : '');
+  if (who === 'bot' && !isTyping) {
+    div.innerHTML = formatText(text);
+  } else {
+    div.textContent = text;
+  }
+  messages.appendChild(div);
+  if (autoScrollEnabled) {
+    messages.scrollTop = messages.scrollHeight;
+  }
+  return div;
+}
+
+/* ============================================================
+   АВТОСКРОЛЛ — отключается при ручной прокрутке вверх
+============================================================ */
+document.getElementById('messages').addEventListener('scroll', (e) => {
+  const el = e.target;
+  const isAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 50;
+  autoScrollEnabled = isAtBottom;
+});
+
+function clearCurrentChat() {
+  if (!confirm('Очистить чат с ' + AI_CONFIG[currentAI].name + '?')) return;
+  chatHistories[currentAI] = [
+    { role: 'system', content: AI_CONFIG[currentAI].system }
+  ];
+  saveHistories();
+  renderHistory(currentAI);
+}
+
+/* ============================================================
+   ОТПРАВКА
+============================================================ */
+async function send() {
+  const input = document.getElementById('input');
+  const sendBtn = document.getElementById('sendBtn');
+  const text = input.value.trim();
+  if (!text) return;
+
+  if (isGenerating) {
+    if (abortController) abortController.abort();
+    isGenerating = false;
+    sendBtn.textContent = '➤';
+    sendBtn.classList.remove('stop');
+    return;
+  }
+
+  if (!chatHistories[currentAI]) {
+    chatHistories[currentAI] = [
+      { role: 'system', content: AI_CONFIG[currentAI].system }
+    ];
+  }
+
+  // Добавляем сообщение пользователя
+  renderMessage(text, 'user');
+  chatHistories[currentAI].push({ role: 'user', content: text });
+  saveHistories();
+
+  input.value = '';
+  sendBtn.disabled = true;
+  autoScrollEnabled = true;
+
+  const typing = addMsg('', 'bot typing');
+
+  isGenerating = true;
+  sendBtn.textContent = '⏹';
+  sendBtn.classList.add('stop');
+  abortController = new AbortController();
+
+  try {
+    let msgs = chatHistories[currentAI];
+    if (msgs.length > 11) {
+      msgs = [msgs[0], ...msgs.slice(-10)];
+    }
+
+    const res = await fetch(LM_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: abortController.signal,
+      body: JSON.stringify({
+        model: 'qwen',
+        messages: msgs,
+        temperature: currentAI === 'poet' ? 0.9 : currentAI === 'coder' ? 0.5 : 0.7,
+        max_tokens: currentAI === 'poet' ? 2048 : currentAI === 'coder' ? 3000 : 1024,
+        stream: true
+      })
+    });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = '';
+    typing.textContent = '';
+    typing.classList.remove('typing');
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = chunk.split('\n');
+      for (const line of lines) {
+        if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+          try {
+            const json = JSON.parse(line.slice(6));
+            const delta = json.choices?.[0]?.delta?.content;
+            if (delta) {
+              fullText += delta;
+              // Обновляем сообщение с форматированием
+              typing.innerHTML = formatText(fullText);
+              if (autoScrollEnabled) {
+                document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+              }
+            }
+          } catch (e) {}
+        }
+      }
+    }
+
+    chatHistories[currentAI].push({ role: 'assistant', content: fullText });
+    saveHistories();
+    typing.innerHTML = formatText(fullText);
+
+  } catch (e) {
+    typing.classList.remove('typing');
+    if (e.name === 'AbortError') {
+      typing.textContent = '⏹ Остановлено';
+    } else {
+      typing.classList.add('error');
+      typing.textContent = '⚠ Ошибка: ' + e.message + '\n\nПроверь LM Studio и CORS.';
+    }
+  } finally {
+    isGenerating = false;
+    sendBtn.disabled = false;
+    sendBtn.textContent = '➤';
+    sendBtn.classList.remove('stop');
+    document.getElementById('input').focus();
+  }
+}
+
+/* ============================================================
+   МОБИЛЬНЫЙ САЙДБАР
+============================================================ */
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+/* ============================================================
+   СТАРТ
+============================================================ */
+loadHistories();
+selectAI('translator');
+document.getElementById('input').focus();
+</script>
+</body>
+</html>

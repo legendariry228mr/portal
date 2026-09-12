@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💰 Финансовый трекер</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2322c55e'/><stop offset='1' stop-color='%2316a34a'/></linearGradient></defs><rect width='64' height='64' rx='14' fill='url(%23g)'/><circle cx='32' cy='32' r='18' fill='none' stroke='white' stroke-width='4'/><path d='M32 20v24M26 26h10a4 4 0 010 8h-8a4 4 0 000 8h10' stroke='white' stroke-width='4' stroke-linecap='round' fill='none'/></svg>">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#0d1117; --bg2:#161b22; --bg3:#21262d; --border:#30363d;
+  --text:#e6edf3; --text2:#8b949e; --accent:#c9a84c; --accent2:#ddc06a;
+  --green:#3fb950; --red:#f85149; --blue:#3ea6ff;
+}
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI',sans-serif;
+       min-height:100vh; padding:20px; }
+.container { max-width:1100px; margin:0 auto; }
+
+.back-link { display:inline-flex; align-items:center; gap:8px;
+  color:var(--accent); text-decoration:none; font-size:.9rem;
+  margin-bottom:16px; padding:8px 14px; border:1px solid var(--border);
+  border-radius:10px; transition:.2s; }
+.back-link:hover { background:var(--bg2); border-color:var(--accent); }
+
+.header-row { display:flex; align-items:center; gap:14px; margin-bottom:24px; }
+.header-icon { width:48px; height:48px; border-radius:12px;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+h1 { font-size:1.8rem; }
+h2 { font-size:1.2rem; margin-bottom:14px; color:var(--accent); }
+
+.card { background:var(--bg2); border:1px solid var(--border);
+        border-radius:14px; padding:20px; margin-bottom:20px; }
+
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+        gap:14px; margin-bottom:14px; }
+
+input, textarea, select, button {
+  background:var(--bg); border:1px solid var(--border); color:var(--text);
+  padding:10px 14px; border-radius:8px; font-size:.95rem;
+  font-family:inherit; outline:none;
+}
+input, textarea, select { width:100%; }
+input:focus, select:focus { border-color:var(--accent); }
+button { background:var(--accent); color:var(--bg); border:none;
+         font-weight:700; cursor:pointer; padding:12px 24px; width:auto;
+         transition:.2s; }
+button:hover { background:var(--accent2); }
+button.danger { background:var(--red); color:#fff; padding:6px 12px; font-size:.8rem; }
+button.ghost { background:var(--bg3); color:var(--text); }
+button.ghost:hover { background:#2d333b; }
+
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+              gap:14px; margin-bottom:20px; }
+.stat { background:var(--bg2); border:1px solid var(--border); border-radius:10px;
+        padding:16px; text-align:center; }
+.stat .label { font-size:.8rem; color:var(--text2); margin-bottom:6px; }
+.stat .value { font-size:1.5rem; font-weight:700; }
+.stat.income .value { color:var(--green); }
+.stat.expense .value { color:var(--red); }
+.stat.balance .value { color:var(--accent); }
+
+table { width:100%; border-collapse:collapse; margin-top:10px; }
+th, td { padding:10px; text-align:left; border-bottom:1px solid var(--bg3);
+         font-size:.9rem; }
+th { color:var(--text2); font-weight:500; font-size:.8rem; text-transform:uppercase; }
+tr:hover { background:var(--bg); }
+.amt-income { color:var(--green); font-weight:600; }
+.amt-expense { color:var(--red); font-weight:600; }
+
+.bar { height:8px; background:var(--bg3); border-radius:4px; overflow:hidden; margin-top:8px; }
+.bar > div { height:100%; background:var(--accent); transition:width .3s; }
+
+.empty { color:var(--text2); text-align:center; padding:30px; font-size:.9rem; }
+
+/* МИНИ-ГРАФИК */
+.chart { display:flex; align-items:flex-end; gap:6px; height:120px;
+         padding:10px 0; margin-top:10px; }
+.chart .bar-chart { flex:1; background:var(--bg3); border-radius:4px 4px 0 0;
+                    min-height:2px; position:relative; transition:.3s; }
+.chart .bar-chart.income { background:var(--green); }
+.chart .bar-chart.expense { background:var(--red); }
+.chart .bar-chart:hover { opacity:.8; }
+.chart-labels { display:flex; gap:6px; font-size:.7rem; color:var(--text2); }
+.chart-labels span { flex:1; text-align:center; }
+
+/* ЭКСПОРТ */
+.export-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="2test.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    Назад в портал
+  </a>
+
+  <div class="header-row">
+    <div class="header-icon">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+           stroke="#fff" stroke-width="2" stroke-linecap="round">
+        <rect x="2" y="6" width="20" height="12" rx="2"/>
+        <circle cx="12" cy="12" r="2"/>
+      </svg>
+    </div>
+    <h1>Финансовый трекер</h1>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat income"><div class="label">Доходы</div>
+      <div class="value" id="statIncome">0 ₽</div></div>
+    <div class="stat expense"><div class="label">Расходы</div>
+      <div class="value" id="statExpense">0 ₽</div></div>
+    <div class="stat balance"><div class="label">Баланс</div>
+      <div class="value" id="statBalance">0 ₽</div></div>
+  </div>
+
+  <div class="card">
+    <h2>🎯 Цели</h2>
+    <div class="grid">
+      <input type="text" id="goalName" placeholder="Название цели">
+      <input type="number" id="goalTarget" placeholder="Нужно накопить, ₽">
+      <button onclick="addGoal()">Добавить</button>
+    </div>
+    <div id="goalsList"></div>
+  </div>
+
+  <div class="card">
+    <h2>➕ Добавить операцию</h2>
+    <div class="grid">
+      <select id="opType">
+        <option value="expense">Расход</option>
+        <option value="income">Доход</option>
+      </select>
+      <input type="number" id="opAmount" placeholder="Сумма, ₽" step="0.01">
+      <input type="text" id="opCategory" placeholder="Категория">
+      <input type="date" id="opDate">
+    </div>
+    <button onclick="addOperation()">Добавить</button>
+  </div>
+
+  <div class="card">
+    <h2>📊 График за последние 7 дней</h2>
+    <div class="chart" id="chart"></div>
+    <div class="chart-labels" id="chartLabels"></div>
+  </div>
+
+  <div class="card">
+    <h2>📋 История операций</h2>
+    <div class="grid">
+      <select id="filterType" onchange="renderHistory()">
+        <option value="all">Все</option>
+        <option value="income">Только доходы</option>
+        <option value="expense">Только расходы</option>
+      </select>
+      <select id="filterMonth" onchange="renderHistory()"></select>
+      <input type="text" id="filterSearch" placeholder="Поиск по категории..."
+             oninput="renderHistory()">
+    </div>
+    <div id="historyList"></div>
+    <div class="export-row">
+      <button class="ghost" onclick="exportCSV()">📥 Экспорт CSV</button>
+      <button class="ghost" onclick="clearAll()">🗑 Очистить всё</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const KEY = 'finance_tracker_v2';
+let data = JSON.parse(localStorage.getItem(KEY) || '{"ops":[],"goals":[]}');
+
+function save() { localStorage.setItem(KEY, JSON.stringify(data)); }
+function fmt(n) { return n.toLocaleString('ru-RU', { maximumFractionDigits:2 }) + ' ₽'; }
+function today() { return new Date().toISOString().slice(0,10); }
+
+/* === ОПЕРАЦИИ === */
+function addOperation() {
+  const type = document.getElementById('opType').value;
+  const amount = parseFloat(document.getElementById('opAmount').value);
+  const category = document.getElementById('opCategory').value.trim() || 'Без категории';
+  const date = document.getElementById('opDate').value || today();
+  if (!amount || amount <= 0) return alert('Введи сумму больше 0');
+  data.ops.push({ id:Date.now(), type, amount, category, date });
+  document.getElementById('opAmount').value = '';
+  document.getElementById('opCategory').value = '';
+  save(); renderAll();
+}
+
+function deleteOp(id) {
+  if (!confirm('Удалить операцию?')) return;
+  data.ops = data.ops.filter(o => o.id !== id);
+  save(); renderAll();
+}
+
+/* === ЦЕЛИ === */
+function addGoal() {
+  const name = document.getElementById('goalName').value.trim();
+  const target = parseFloat(document.getElementById('goalTarget').value);
+  if (!name || !target || target <= 0) return alert('Заполни поля');
+  data.goals.push({ id:Date.now(), name, target, saved:0 });
+  document.getElementById('goalName').value = '';
+  document.getElementById('goalTarget').value = '';
+  save(); renderAll();
+}
+
+function deleteGoal(id) {
+  if (!confirm('Удалить цель?')) return;
+  data.goals = data.goals.filter(g => g.id !== id);
+  save(); renderAll();
+}
+
+function addToGoal(id) {
+  const amount = parseFloat(prompt('Сколько отложить?'));
+  if (!amount || amount <= 0) return;
+  const g = data.goals.find(x => x.id === id);
+  if (g) { g.saved += amount; save(); renderAll(); }
+}
+
+/* === ГРАФИК === */
+function renderChart() {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().slice(0,10));
+  }
+  const incByDay = days.map(d =>
+    data.ops.filter(o => o.type==='income' && o.date===d).reduce((s,o)=>s+o.amount,0));
+  const expByDay = days.map(d =>
+    data.ops.filter(o => o.type==='expense' && o.date===d).reduce((s,o)=>s+o.amount,0));
+  const max = Math.max(...incByDay, ...expByDay, 1);
+
+  const chart = document.getElementById('chart');
+  chart.innerHTML = days.map((d,i) => {
+    const h1 = (incByDay[i] / max) * 100;
+    const h2 = (expByDay[i] / max) * 100;
+    return `<div style="flex:1;display:flex;gap:2px;align-items:flex-end;height:100%;">
+      <div class="bar-chart income" style="height:${h1}%"
+           title="Доход: ${fmt(incByDay[i])}"></div>
+      <div class="bar-chart expense" style="height:${h2}%"
+           title="Расход: ${fmt(expByDay[i])}"></div>
+    </div>`;
+  }).join('');
+
+  const names = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  document.getElementById('chartLabels').innerHTML =
+    days.map(d => `<span>${names[new Date(d).getDay()]}</span>`).join('');
+}
+
+/* === ИСТОРИЯ === */
+function renderHistory() {
+  const fType = document.getElementById('filterType').value;
+  const fMonth = document.getElementById('filterMonth').value;
+  const q = document.getElementById('filterSearch').value.trim().toLowerCase();
+
+  let ops = [...data.ops].sort((a,b) => b.date.localeCompare(a.date));
+  if (fType !== 'all') ops = ops.filter(o => o.type === fType);
+  if (fMonth) ops = ops.filter(o => o.date.startsWith(fMonth));
+  if (q) ops = ops.filter(o => o.category.toLowerCase().includes(q));
+
+  const box = document.getElementById('historyList');
+  if (!ops.length) { box.innerHTML = '<div class="empty">Операций нет</div>'; return; }
+
+  box.innerHTML = `<table>
+    <thead><tr><th>Дата</th><th>Категория</th><th>Тип</th><th>Сумма</th><th></th></tr></thead>
+    <tbody>${ops.map(o => `
+      <tr>
+        <td>${o.date}</td>
+        <td>${o.category}</td>
+        <td>${o.type==='income' ? '💚 Доход' : '❤️ Расход'}</td>
+        <td class="amt-${o.type}">${o.type==='income' ? '+' : '−'}${fmt(o.amount)}</td>
+        <td><button class="danger" onclick="deleteOp(${o.id})">✕</button></td>
+      </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+function renderMonths() {
+  const months = new Set(data.ops.map(o => o.date.slice(0,7)));
+  const sel = document.getElementById('filterMonth');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Все месяцы</option>' +
+    [...months].sort().reverse().map(m => `<option value="${m}">${m}</option>`).join('');
+  sel.value = cur;
+}
+
+function renderStats() {
+  const inc = data.ops.filter(o => o.type==='income').reduce((s,o) => s+o.amount,0);
+  const exp = data.ops.filter(o => o.type==='expense').reduce((s,o) => s+o.amount,0);
+  document.getElementById('statIncome').textContent = fmt(inc);
+  document.getElementById('statExpense').textContent = fmt(exp);
+  document.getElementById('statBalance').textContent = fmt(inc - exp);
+}
+
+function renderGoals() {
+  const box = document.getElementById('goalsList');
+  if (!data.goals.length) { box.innerHTML = '<div class="empty">Целей пока нет</div>'; return; }
+  box.innerHTML = data.goals.map(g => {
+    const pct = Math.min(100, (g.saved / g.target) * 100);
+    return `<div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <strong>${g.name}</strong>
+        <span>${fmt(g.saved)} / ${fmt(g.target)}</span>
+      </div>
+      <div class="bar"><div style="width:${pct}%"></div></div>
+      <div style="margin-top:8px;display:flex;gap:8px;">
+        <button onclick="addToGoal(${g.id})" style="padding:6px 12px;font-size:.8rem;">+ Отложить</button>
+        <button class="danger" onclick="deleteGoal(${g.id})">Удалить</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* === ЭКСПОРТ === */
+function exportCSV() {
+  if (!data.ops.length) return alert('Нет операций');
+  const rows = [['Дата','Тип','Категория','Сумма']];
+  data.ops.forEach(o => rows.push([o.date, o.type, o.category, o.amount]));
+  const csv = rows.map(r => r.join(';')).join('\n');
+  const blob = new Blob(['\ufeff' + csv], { type:'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'finance_' + today() + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function clearAll() {
+  if (!confirm('Точно удалить ВСЕ операции и цели?')) return;
+  data = { ops:[], goals:[] };
+  save(); renderAll();
+}
+
+/* === СТАРТ === */
+function renderAll() {
+  renderStats(); renderGoals(); renderMonths(); renderHistory(); renderChart();
+}
+document.getElementById('opDate').value = today();
+renderAll();
+</script>
+</body>
+</html>

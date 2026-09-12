@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎓 Трекер обучения</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23ff0080'/><stop offset='1' stop-color='%2300d4ff'/></linearGradient></defs><rect width='64' height='64' rx='14' fill='url(%23g)'/><path d='M32 18L12 28l20 10 20-10-20-10z' fill='white'/></svg>">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg:#0a0a0f; --bg2:#12121a; --bg3:#1c1c28; --border:#2a2a3a;
+  --text:#f0f0f5; --text2:#8888a0;
+  --rgb1:#ff0080; --rgb2:#00d4ff; --rgb3:#a855f7;
+  --green:#3fb950; --red:#f85149;
+}
+
+@keyframes rgbShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes rgbGlow {
+  0%,100% { box-shadow: 0 0 20px rgba(255,0,128,.4), 0 0 40px rgba(0,212,255,.2); }
+  50%     { box-shadow: 0 0 30px rgba(0,212,255,.5), 0 0 50px rgba(168,85,247,.3); }
+}
+
+body {
+  background:var(--bg); color:var(--text);
+  font-family:'Segoe UI',sans-serif;
+  min-height:100vh; padding:20px;
+  background-image:
+    radial-gradient(circle at 10% 10%, rgba(255,0,128,.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 90%, rgba(0,212,255,.08) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(168,85,247,.05) 0%, transparent 60%);
+  background-attachment:fixed;
+}
+
+.container { max-width:1100px; margin:0 auto; }
+
+/* ЗАГОЛОВОК С RGB */
+h1 {
+  font-size:1.8rem;
+  background: linear-gradient(90deg, #ff0080, #00d4ff, #a855f7, #ff0080);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rgbShift 6s ease infinite;
+}
+
+h2 { font-size:1.2rem; margin-bottom:14px;
+  background: linear-gradient(90deg, #ff0080, #00d4ff);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rgbShift 4s ease infinite;
+}
+
+/* BACK LINK */
+.back-link { display:inline-flex; align-items:center; gap:8px;
+  color:#fff; text-decoration:none; font-size:.9rem;
+  margin-bottom:16px; padding:8px 14px;
+  border:1px solid transparent;
+  border-radius:10px; transition:.3s;
+  background: linear-gradient(var(--bg2), var(--bg2)) padding-box,
+              linear-gradient(135deg, #ff0080, #00d4ff) border-box;
+}
+.back-link:hover {
+  background: linear-gradient(var(--bg3), var(--bg3)) padding-box,
+              linear-gradient(135deg, #00d4ff, #a855f7, #ff0080) border-box;
+  box-shadow: 0 0 20px rgba(255,0,128,.4);
+}
+
+.header-row { display:flex; align-items:center; gap:14px; margin-bottom:24px; }
+.header-icon {
+  width:48px; height:48px; border-radius:12px;
+  background: linear-gradient(135deg, #ff0080, #00d4ff, #a855f7);
+  background-size: 200% 200%;
+  animation: rgbShift 4s ease infinite;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  box-shadow: 0 0 25px rgba(255,0,128,.5);
+}
+
+/* КАРТОЧКИ */
+.card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:14px; padding:20px; margin-bottom:20px;
+  position:relative; overflow:hidden;
+  transition:.3s;
+}
+.card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, #ff0080, #00d4ff, #a855f7, #ff0080);
+  background-size: 300% 100%;
+  animation: rgbShift 4s ease infinite;
+  opacity:0; transition:.3s;
+}
+.card:hover::before { opacity:1; }
+.card:hover { border-color: rgba(255,0,128,.3); }
+
+/* ПОЛЯ */
+input, textarea, select {
+  background:var(--bg); border:1px solid var(--border); color:var(--text);
+  padding:10px 14px; border-radius:8px; font-size:.95rem;
+  font-family:inherit; outline:none; width:100%;
+  transition:.3s;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: transparent;
+  background: linear-gradient(var(--bg), var(--bg)) padding-box,
+              linear-gradient(135deg, #ff0080, #00d4ff) border-box;
+  box-shadow: 0 0 15px rgba(255,0,128,.3);
+}
+
+/* КНОПКИ */
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  background: linear-gradient(135deg, #ff0080, #a855f7, #00d4ff);
+  background-size: 200% 200%;
+  animation: rgbShift 5s ease infinite;
+  color:#fff; border:none; font-weight:700;
+  cursor:pointer; padding:12px 22px;
+  border-radius:10px; font-size:.95rem;
+  font-family:inherit; transition:.2s;
+  box-shadow: 0 4px 20px rgba(255,0,128,.3);
+}
+.btn:hover {
+  transform:translateY(-2px);
+  box-shadow: 0 6px 30px rgba(0,212,255,.5);
+}
+.btn:active { transform:translateY(0); }
+.btn svg { width:16px; height:16px; }
+
+.btn.ghost {
+  background:var(--bg3); color:var(--text);
+  box-shadow:none; animation:none;
+}
+.btn.ghost:hover {
+  background: linear-gradient(var(--bg3), var(--bg3)) padding-box,
+              linear-gradient(135deg, #ff0080, #00d4ff) border-box;
+  border:1px solid transparent;
+  box-shadow: 0 0 15px rgba(255,0,128,.3);
+}
+.btn.danger {
+  background: linear-gradient(135deg, #f85149, #ff6b6b);
+  animation:none; padding:8px 14px; font-size:.85rem;
+}
+.btn.small { padding:8px 14px; font-size:.85rem; }
+
+/* СЕТКА */
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+        gap:14px; margin-bottom:14px; }
+
+/* ПОДТАБЫ */
+.subtabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+.subtabs button {
+  background:var(--bg2); border:1px solid var(--border);
+  color:var(--text); padding:10px 18px; border-radius:10px;
+  cursor:pointer; font-size:.9rem; font-family:inherit;
+  display:inline-flex; align-items:center; gap:8px;
+  transition:.3s;
+}
+.subtabs button:hover {
+  border-color: rgba(255,0,128,.4);
+  box-shadow: 0 0 15px rgba(255,0,128,.2);
+}
+.subtabs button.active {
+  background: linear-gradient(135deg, #ff0080, #a855f7, #00d4ff);
+  background-size: 200% 200%;
+  animation: rgbShift 5s ease infinite;
+  color:#fff; border-color:transparent; font-weight:700;
+  box-shadow: 0 4px 20px rgba(255,0,128,.4);
+}
+.subtabs button svg { width:16px; height:16px; }
+.subpanel { display:none; }
+.subpanel.active { display:block; }
+
+/* ФЛЕШ-КАРТОЧКА */
+.flashcard {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:14px; padding:40px 24px; text-align:center;
+  min-height:240px; display:flex; flex-direction:column;
+  justify-content:center; align-items:center;
+  margin-bottom:16px; cursor:pointer; transition:.3s;
+  position:relative; overflow:hidden;
+}
+.flashcard::before {
+  content:''; position:absolute; inset:-2px;
+  background: linear-gradient(135deg, #ff0080, #00d4ff, #a855f7, #ff0080);
+  background-size: 300% 300%;
+  animation: rgbShift 6s ease infinite;
+  border-radius:16px; z-index:-1; opacity:0; transition:.3s;
+}
+.flashcard:hover::before { opacity:1; }
+.flashcard:hover { transform:scale(1.01); }
+.flashcard .question { font-size:1.6rem; font-weight:600; margin-bottom:16px; }
+.flashcard .answer {
+  font-size:1.3rem; margin-top:16px;
+  padding-top:16px; border-top:1px solid var(--border);
+  background: linear-gradient(90deg, #ff0080, #00d4ff);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rgbShift 4s ease infinite;
+}
+.flashcard .hint { font-size:.8rem; color:var(--text2); margin-top:16px; }
+
+/* ПРИВЫЧКИ */
+.habit-row { display:flex; align-items:center; gap:12px; padding:12px;
+             border-bottom:1px solid var(--bg3); flex-wrap:wrap; }
+.habit-row:last-child { border-bottom:none; }
+.habit-name { flex:1; font-weight:600; min-width:120px; }
+.habit-days { display:flex; gap:4px; }
+.day {
+  width:34px; height:34px; border-radius:8px; background:var(--bg3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:.7rem; color:var(--text2); cursor:pointer;
+  border:1px solid var(--border); transition:.3s;
+}
+.day:hover {
+  border-color: rgba(255,0,128,.5);
+  box-shadow: 0 0 10px rgba(255,0,128,.3);
+}
+.day.done {
+  background: linear-gradient(135deg, #00d4ff, #a855f7);
+  color:#fff; border-color:transparent;
+  box-shadow: 0 0 12px rgba(0,212,255,.5);
+}
+.day.today {
+  border-color: #ff0080; border-width:2px;
+  box-shadow: 0 0 10px rgba(255,0,128,.5);
+}
+
+/* ЗАДАЧИ */
+.task-row { display:flex; align-items:center; gap:12px; padding:12px;
+            border-bottom:1px solid var(--bg3); }
+.task-row:last-child { border-bottom:none; }
+.task-check {
+  width:24px; height:24px; border-radius:6px;
+  border:2px solid var(--border); background:transparent;
+  cursor:pointer; flex-shrink:0; display:flex;
+  align-items:center; justify-content:center;
+  transition:.3s; color:transparent;
+}
+.task-check:hover { border-color:#ff0080; box-shadow:0 0 10px rgba(255,0,128,.4); }
+.task-check.done {
+  background: linear-gradient(135deg, #00d4ff, #a855f7);
+  border-color:transparent; color:#fff;
+}
+.task-text { flex:1; }
+.task-text.done { text-decoration:line-through; color:var(--text2); }
+.task-priority { font-size:.7rem; padding:3px 8px; border-radius:6px; font-weight:600; }
+.task-priority.high { background:rgba(255,0,128,.2); color:#ff66b3; }
+.task-priority.med { background:rgba(255,200,0,.15); color:#ffcc66; }
+.task-priority.low { background:rgba(0,212,255,.15); color:#66d9ff; }
+
+/* ТАЙМЕР */
+.timer-card {
+  text-align:center; padding:40px 20px;
+  background:var(--bg2); border-radius:16px; margin-bottom:20px;
+  position:relative; overflow:hidden;
+}
+.timer-card::before {
+  content:''; position:absolute; inset:-2px;
+  background: linear-gradient(135deg, #ff0080, #00d4ff, #a855f7, #ff0080);
+  background-size: 300% 300%;
+  animation: rgbShift 5s ease infinite;
+  border-radius:18px; z-index:-1; opacity:.6;
+}
+.timer-display {
+  font-size:5.5rem; font-weight:800;
+  font-variant-numeric:tabular-nums;
+  margin:20px 0; letter-spacing:4px;
+  background: linear-gradient(90deg, #ff0080, #00d4ff, #a855f7, #ff0080);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rgbShift 3s ease infinite;
+  text-shadow: 0 0 40px rgba(255,0,128,.3);
+}
+.timer-phase {
+  font-size:1.1rem; color:var(--text2);
+  margin-bottom:10px; text-transform:uppercase;
+  letter-spacing:3px; font-weight:600;
+}
+.timer-phase.work { color:#ff0080; text-shadow:0 0 15px rgba(255,0,128,.5); }
+.timer-phase.break { color:#00d4ff; text-shadow:0 0 15px rgba(0,212,255,.5); }
+
+.timer-inputs {
+  display:flex; gap:10px; justify-content:center;
+  align-items:center; flex-wrap:wrap; margin:16px 0;
+}
+.timer-inputs label {
+  font-size:.85rem; color:var(--text2); display:flex;
+  align-items:center; gap:6px;
+}
+.timer-inputs input {
+  width:70px; text-align:center; font-weight:700;
+  font-size:1rem; padding:8px;
+}
+
+.timer-btns {
+  display:flex; gap:10px; justify-content:center;
+  flex-wrap:wrap; margin-top:20px;
+}
+
+.timer-presets {
+  display:flex; gap:8px; justify-content:center;
+  flex-wrap:wrap; margin-top:14px;
+}
+
+.timer-stats {
+  display:flex; gap:20px; justify-content:center;
+  margin-top:30px; flex-wrap:wrap;
+}
+.timer-stat {
+  background:var(--bg); border-radius:10px; padding:14px 22px;
+  border:1px solid var(--border);
+}
+.timer-stat .v {
+  font-size:1.6rem; font-weight:700;
+  background: linear-gradient(90deg, #ff0080, #00d4ff);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rgbShift 3s ease infinite;
+}
+.timer-stat .l { font-size:.75rem; color:var(--text2); }
+
+/* МИНИ-СТАТЫ */
+.mini-stats { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+.mini-stat {
+  background:var(--bg); border:1px solid var(--border);
+  border-radius:8px; padding:10px 16px; font-size:.85rem;
+}
+.mini-stat b {
+  background: linear-gradient(90deg, #ff0080, #00d4ff);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rgbShift 3s ease infinite;
+}
+
+.empty { color:var(--text2); text-align:center; padding:30px; font-size:.9rem; }
+
+/* ТОСТ */
+.toast {
+  position:fixed; bottom:24px; left:50%;
+  transform:translateX(-50%) translateY(120px);
+  background:var(--bg2); color:var(--text);
+  padding:14px 22px; border-radius:12px;
+  z-index:5000; font-size:.9rem; opacity:0;
+  transition:.3s; display:flex; align-items:center; gap:10px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.6), 0 0 20px rgba(255,0,128,.3);
+  border:1px solid transparent;
+  background: linear-gradient(var(--bg2), var(--bg2)) padding-box,
+              linear-gradient(135deg, #ff0080, #00d4ff) border-box;
+}
+.toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+.toast svg { width:18px; height:18px; flex-shrink:0; }
+
+@media (max-width:600px) {
+  .timer-display { font-size:3.5rem; }
+  .day { width:28px; height:28px; font-size:.6rem; }
+  h1 { font-size:1.4rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="2test.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    Назад в портал
+  </a>
+
+  <div class="header-row">
+    <div class="header-icon">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+           stroke="#fff" stroke-width="2" stroke-linecap="round">
+        <path d="M12 3L2 8l10 5 10-5-10-5z"/>
+        <path d="M2 16l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <h1>Трекер обучения</h1>
+  </div>
+
+  <div class="subtabs">
+    <button class="active" onclick="switchSub('cards', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="5" width="18" height="14" rx="2"/>
+        <path d="M7 9h10M7 13h6"/>
+      </svg>
+      Карточки
+    </button>
+    <button onclick="switchSub('habits', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 11l3 3L22 4"/>
+        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+      </svg>
+      Привычки
+    </button>
+    <button onclick="switchSub('tasks', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 11l3 3L22 4"/>
+        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+      </svg>
+      Задачи
+    </button>
+    <button onclick="switchSub('timer', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M12 7v5l3 2"/>
+      </svg>
+      Таймер
+    </button>
+  </div>
+
+  <!-- ==================== КАРТОЧКИ ==================== -->
+  <div class="subpanel active" id="sub-cards">
+    <div class="card">
+      <h2>Добавить карточку</h2>
+      <div class="grid">
+        <input type="text" id="cardQ" placeholder="Вопрос">
+        <input type="text" id="cardA" placeholder="Ответ">
+      </div>
+      <button class="btn" onclick="addCard()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Добавить
+      </button>
+    </div>
+
+    <div class="card">
+      <h2>Тренировка <span id="cardCounter" style="color:var(--text2);font-size:.9rem;"></span></h2>
+      <div id="cardView"></div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+        <button class="btn ghost" onclick="prevCard()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Назад
+        </button>
+        <button class="btn ghost" onclick="shuffleCards()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
+          </svg>
+          Перемешать
+        </button>
+        <button class="btn" onclick="nextCard()">
+          Следующая
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Все карточки</h2>
+      <div class="mini-stats">
+        <div class="mini-stat">Всего: <b id="totalCards">0</b></div>
+      </div>
+      <div id="cardsList"></div>
+      <div style="margin-top:14px;">
+        <button class="btn ghost" onclick="clearCards()">Удалить все</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ПРИВЫЧКИ ==================== -->
+  <div class="subpanel" id="sub-habits">
+    <div class="card">
+      <h2>Новая привычка</h2>
+      <div class="grid">
+        <input type="text" id="habitName" placeholder="Название привычки">
+      </div>
+      <button class="btn" onclick="addHabit()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Добавить
+      </button>
+    </div>
+    <div class="card">
+      <h2>Привычки за неделю</h2>
+      <div id="habitsList"></div>
+    </div>
+  </div>
+
+  <!-- ==================== ЗАДАЧИ ==================== -->
+  <div class="subpanel" id="sub-tasks">
+    <div class="card">
+      <h2>Новая задача</h2>
+      <div class="grid">
+        <input type="text" id="taskText" placeholder="Что нужно сделать?">
+        <select id="taskPriority">
+          <option value="low">Низкий приоритет</option>
+          <option value="med" selected>Средний приоритет</option>
+          <option value="high">Высокий приоритет</option>
+        </select>
+      </div>
+      <button class="btn" onclick="addTask()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Добавить
+      </button>
+    </div>
+
+    <div class="card">
+      <h2>Список задач</h2>
+      <div class="grid">
+        <select id="taskFilter" onchange="renderTasks()">
+          <option value="all">Все</option>
+          <option value="active">Активные</option>
+          <option value="done">Выполненные</option>
+        </select>
+        <select id="taskPrioFilter" onchange="renderTasks()">
+          <option value="all">Любой приоритет</option>
+          <option value="high">Высокий</option>
+          <option value="med">Средний</option>
+          <option value="low">Низкий</option>
+        </select>
+      </div>
+      <div class="mini-stats">
+        <div class="mini-stat">Всего: <b id="totalTasks">0</b></div>
+        <div class="mini-stat">Активных: <b id="activeTasks">0</b></div>
+        <div class="mini-stat">Выполнено: <b id="doneTasks">0</b></div>
+      </div>
+      <div id="tasksList"></div>
+      <div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn ghost" onclick="clearDoneTasks()">Убрать выполненные</button>
+        <button class="btn ghost" onclick="clearTasks()">Удалить все</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ТАЙМЕР ==================== -->
+  <div class="subpanel" id="sub-timer">
+    <div class="timer-card">
+      <div class="timer-phase work" id="timerPhase">Работа</div>
+      <div class="timer-display" id="timerDisplay">25:00</div>
+
+      <div class="timer-inputs">
+        <label>
+          <input type="number" id="inputHours" min="0" max="23" value="0">
+          ч
+        </label>
+        <label>
+          <input type="number" id="inputMinutes" min="0" max="59" value="25">
+          мин
+        </label>
+        <label>
+          <input type="number" id="inputSeconds" min="0" max="59" value="0">
+          сек
+        </label>
+      </div>
+
+      <div class="timer-btns">
+        <button class="btn" id="timerToggleBtn" onclick="timerToggle()">
+          <svg id="timerToggleIcon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          <span id="timerToggleText">Старт</span>
+        </button>
+        <button class="btn ghost" onclick="timerReset()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 4v6h6M23 20v-6h-6"/>
+            <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/>
+          </svg>
+          Сброс
+        </button>
+      </div>
+
+      <div class="timer-presets">
+        <button class="btn ghost small" onclick="setPreset(15,0,0)">15 мин</button>
+        <button class="btn ghost small" onclick="setPreset(25,0,0)">25 мин</button>
+        <button class="btn ghost small" onclick="setPreset(45,0,0)">45 мин</button>
+        <button class="btn ghost small" onclick="setPreset(1,0,0)">1 час</button>
+        <button class="btn ghost small" onclick="setPreset(2,0,0)">2 часа</button>
+      </div>
+
+      <div class="timer-stats">
+        <div class="timer-stat"><div class="v" id="timerSessions">0</div><div class="l">Сессий сегодня</div></div>
+        <div class="timer-stat"><div class="v" id="timerTotal">0</div><div class="l">Всего минут</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   ДАННЫЕ
+============================================================ */
+const KEY = 'study_tracker_v4';
+let data = JSON.parse(localStorage.getItem(KEY) || 'null') || {
+  cards: [], habits: [], tasks: [],
+  timer: { sessions: 0, total: 0, date: '' }
+};
+if (!data.tasks) data.tasks = [];
+if (!data.timer) data.timer = { sessions: 0, total: 0, date: '' };
+
+function save() { localStorage.setItem(KEY, JSON.stringify(data)); }
+function today() { return new Date().toISOString().slice(0,10); }
+
+function toast(text, type) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  const icon = type === 'error'
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="#f85149" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>';
+  t.innerHTML = icon + '<span>' + text + '</span>';
+  t.className = 'toast show';
+  clearTimeout(t._tm);
+  t._tm = setTimeout(() => t.className = 'toast', 2500);
+}
+
+function switchSub(name, btn) {
+  document.querySelectorAll('.subpanel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.subtabs button').forEach(b => b.classList.remove('active'));
+  document.getElementById('sub-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+/* ============================================================
+   КАРТОЧКИ
+============================================================ */
+let cardIdx = 0, cardFlipped = false;
+
+function addCard() {
+  const q = document.getElementById('cardQ').value.trim();
+  const a = document.getElementById('cardA').value.trim();
+  if (!q || !a) { toast('Заполни вопрос и ответ', 'error'); return; }
+  data.cards.push({ id:Date.now(), q, a });
+  document.getElementById('cardQ').value = '';
+  document.getElementById('cardA').value = '';
+  save(); renderCards();
+  toast('Карточка добавлена');
+}
+
+function deleteCard(id) {
+  data.cards = data.cards.filter(c => c.id !== id);
+  if (cardIdx >= data.cards.length) cardIdx = 0;
+  save(); renderCards();
+  toast('Карточка удалена');
+}
+
+function clearCards() {
+  if (!data.cards.length) return;
+  if (!confirm('Удалить ВСЕ карточки?')) return;
+  data.cards = []; cardIdx = 0;
+  save(); renderCards();
+  toast('Все карточки удалены');
+}
+
+function nextCard() {
+  if (!data.cards.length) return;
+  cardIdx = (cardIdx + 1) % data.cards.length;
+  cardFlipped = false; renderCardView();
+}
+
+function prevCard() {
+  if (!data.cards.length) return;
+  cardIdx = (cardIdx - 1 + data.cards.length) % data.cards.length;
+  cardFlipped = false; renderCardView();
+}
+
+function flipCard() { cardFlipped = !cardFlipped; renderCardView(); }
+
+function shuffleCards() {
+  if (data.cards.length < 2) return;
+  for (let i = data.cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [data.cards[i], data.cards[j]] = [data.cards[j], data.cards[i]];
+  }
+  cardIdx = 0; cardFlipped = false;
+  save(); renderCards();
+  toast('Карточки перемешаны');
+}
+
+function renderCardView() {
+  const view = document.getElementById('cardView');
+  const counter = document.getElementById('cardCounter');
+  if (!data.cards.length) {
+    view.innerHTML = '<div class="empty">Карточек пока нет. Добавь первую!</div>';
+    counter.textContent = ''; return;
+  }
+  const c = data.cards[cardIdx];
+  counter.textContent = `(${cardIdx + 1} / ${data.cards.length})`;
+  view.innerHTML = `
+    <div class="flashcard" onclick="flipCard()">
+      <div class="question">${c.q}</div>
+      ${cardFlipped ? `<div class="answer">${c.a}</div>` : ''}
+      <div class="hint">${cardFlipped ? 'Нажми, чтобы скрыть' : 'Нажми, чтобы увидеть ответ'}</div>
+    </div>`;
+}
+
+function renderCardsList() {
+  document.getElementById('totalCards').textContent = data.cards.length;
+  const box = document.getElementById('cardsList');
+  if (!data.cards.length) { box.innerHTML = '<div class="empty">Пусто</div>'; return; }
+  box.innerHTML = data.cards.map(c => `
+    <div style="display:flex;justify-content:space-between;align-items:center;
+                padding:10px;border-bottom:1px solid var(--bg3);gap:10px;">
+      <div style="flex:1;"><strong>${c.q}</strong><br>
+        <span style="color:var(--text2);font-size:.85rem;">${c.a}</span></div>
+      <button class="btn danger" onclick="deleteCard(${c.id})">✕</button>
+    </div>`).join('');
+}
+
+function renderCards() { renderCardView(); renderCardsList(); }
+
+/* ============================================================
+   ПРИВЫЧКИ
+============================================================ */
+function addHabit() {
+  const name = document.getElementById('habitName').value.trim();
+  if (!name) { toast('Введи название', 'error'); return; }
+  data.habits.push({ id:Date.now(), name, days:{} });
+  document.getElementById('habitName').value = '';
+  save(); renderHabits();
+  toast('Привычка добавлена');
+}
+
+function deleteHabit(id) {
+  data.habits = data.habits.filter(h => h.id !== id);
+  save(); renderHabits();
+  toast('Привычка удалена');
+}
+
+function toggleDay(habitId, dateStr) {
+  const h = data.habits.find(x => x.id === habitId);
+  if (!h) return;
+  h.days[dateStr] = !h.days[dateStr];
+  if (!h.days[dateStr]) delete h.days[dateStr];
+  save(); renderHabits();
+}
+
+function last7Days() {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().slice(0,10));
+  }
+  return days;
+}
+
+function renderHabits() {
+  const box = document.getElementById('habitsList');
+  if (!data.habits.length) {
+    box.innerHTML = '<div class="empty">Привычек пока нет</div>'; return;
+  }
+  const days = last7Days();
+  const dayNames = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+
+  box.innerHTML = data.habits.map(h => {
+    let streak = 0;
+    const d = new Date();
+    while (true) {
+      const key = d.toISOString().slice(0,10);
+      if (h.days[key]) { streak++; d.setDate(d.getDate() - 1); }
+      else break;
+    }
+    return `
+    <div class="habit-row">
+      <div class="habit-name">${h.name}<br>
+        <span style="font-size:.75rem;color:var(--text2);">🔥 серия: ${streak} дн.</span>
+      </div>
+      <div class="habit-days">
+        ${days.map(d => {
+          const dt = new Date(d);
+          const isToday = d === today();
+          const done = h.days[d];
+          return `<div class="day ${done?'done':''} ${isToday?'today':''}"
+                       onclick="toggleDay(${h.id}, '${d}')"
+                       title="${d}">${dayNames[dt.getDay()]}</div>`;
+        }).join('')}
+      </div>
+      <button class="btn danger" onclick="deleteHabit(${h.id})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+/* ============================================================
+   ЗАДАЧИ
+============================================================ */
+function addTask() {
+  const text = document.getElementById('taskText').value.trim();
+  const priority = document.getElementById('taskPriority').value;
+  if (!text) { toast('Введи текст задачи', 'error'); return; }
+  data.tasks.push({ id:Date.now(), text, priority, done:false, created:today() });
+  document.getElementById('taskText').value = '';
+  save(); renderTasks();
+  toast('Задача добавлена');
+}
+
+function toggleTask(id) {
+  const t = data.tasks.find(x => x.id === id);
+  if (t) { t.done = !t.done; save(); renderTasks(); }
+}
+
+function deleteTask(id) {
+  data.tasks = data.tasks.filter(t => t.id !== id);
+  save(); renderTasks();
+}
+
+function clearDoneTasks() {
+  const before = data.tasks.length;
+  data.tasks = data.tasks.filter(t => !t.done);
+  if (before === data.tasks.length) { toast('Нет выполненных', 'error'); return; }
+  save(); renderTasks();
+  toast('Выполненные убраны');
+}
+
+function clearTasks() {
+  if (!data.tasks.length) return;
+  if (!confirm('Удалить ВСЕ задачи?')) return;
+  data.tasks = [];
+  save(); renderTasks();
+  toast('Все задачи удалены');
+}
+
+function renderTasks() {
+  const fStatus = document.getElementById('taskFilter').value;
+  const fPrio = document.getElementById('taskPrioFilter').value;
+
+  let tasks = [...data.tasks];
+  if (fStatus === 'active') tasks = tasks.filter(t => !t.done);
+  if (fStatus === 'done') tasks = tasks.filter(t => t.done);
+  if (fPrio !== 'all') tasks = tasks.filter(t => t.priority === fPrio);
+
+  const order = { high:0, med:1, low:2 };
+  tasks.sort((a,b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return order[a.priority] - order[b.priority];
+  });
+
+  document.getElementById('totalTasks').textContent = data.tasks.length;
+  document.getElementById('activeTasks').textContent = data.tasks.filter(t => !t.done).length;
+  document.getElementById('doneTasks').textContent = data.tasks.filter(t => t.done).length;
+
+  const box = document.getElementById('tasksList');
+  if (!tasks.length) { box.innerHTML = '<div class="empty">Задач нет</div>'; return; }
+
+  const prioName = { high:'Высокий', med:'Средний', low:'Низкий' };
+
+  box.innerHTML = tasks.map(t => `
+    <div class="task-row">
+      <div class="task-check ${t.done?'done':''}" onclick="toggleTask(${t.id})">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="3">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+      </div>
+      <div class="task-text ${t.done?'done':''}">${t.text}</div>
+      <span class="task-priority ${t.priority}">${prioName[t.priority]}</span>
+      <button class="btn danger" onclick="deleteTask(${t.id})">✕</button>
+    </div>`).join('');
+}
+
+/* ============================================================
+   ТАЙМЕР
+============================================================ */
+let timerInterval = null;
+let timerSeconds = 25 * 60;
+let timerTotal = 25 * 60;
+let timerRunning = false;
+
+function checkTimerDate() {
+  if (data.timer.date !== today()) {
+    data.timer.date = today();
+    data.timer.sessions = 0;
+    save();
+  }
+}
+
+function updateTimerUI() {
+  const h = Math.floor(timerSeconds / 3600);
+  const m = Math.floor((timerSeconds % 3600) / 60);
+  const s = timerSeconds % 60;
+  const parts = [];
+  if (h > 0) parts.push(String(h).padStart(2,'0'));
+  parts.push(String(m).padStart(2,'0'));
+  parts.push(String(s).padStart(2,'0'));
+  document.getElementById('timerDisplay').textContent = parts.join(':');
+  document.getElementById('timerSessions').textContent = data.timer.sessions;
+  document.getElementById('timerTotal').textContent = data.timer.total;
+}
+
+function setPreset(h, m, s) {
+  if (timerRunning) return;
+  document.getElementById('inputHours').value = h;
+  document.getElementById('inputMinutes').value = m;
+  document.getElementById('inputSeconds').value = s;
+  applyInputs();
+}
+
+function applyInputs() {
+  const h = parseInt(document.getElementById('inputHours').value) || 0;
+  const m = parseInt(document.getElementById('inputMinutes').value) || 0;
+  const s = parseInt(document.getElementById('inputSeconds').value) || 0;
+  timerSeconds = h * 3600 + m * 60 + s;
+  timerTotal = timerSeconds;
+  updateTimerUI();
+}
+
+['inputHours','inputMinutes','inputSeconds'].forEach(id => {
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById(id)?.addEventListener('input', () => {
+      if (!timerRunning) applyInputs();
+    });
+  });
+});
+
+function timerToggle() {
+  if (timerRunning) {
+    // пауза
+    clearInterval(timerInterval);
+    timerInterval = null;
+    timerRunning = false;
+    updateToggleButton();
+  } else {
+    // старт
+    if (timerSeconds <= 0) {
+      applyInputs();
+      if (timerSeconds <= 0) { toast('Установи время', 'error'); return; }
+    }
+    timerRunning = true;
+    updateToggleButton();
+    timerInterval = setInterval(() => {
+      timerSeconds--;
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        timerRunning = false;
+        data.timer.sessions++;
+        data.timer.total += Math.round(timerTotal / 60);
+        save();
+        toast('⏰ Время вышло!');
+        updateToggleButton();
+        timerSeconds = timerTotal;
+      }
+      updateTimerUI();
+    }, 1000);
+  }
+}
+
+function updateToggleButton() {
+  const btn = document.getElementById('timerToggleBtn');
+  const icon = document.getElementById('timerToggleIcon');
+  const text = document.getElementById('timerToggleText');
+  if (timerRunning) {
+    icon.innerHTML = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
+    text.textContent = 'Пауза';
+  } else {
+    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    text.textContent = 'Старт';
+  }
+}
+
+function timerReset() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerRunning = false;
+  applyInputs();
+  updateToggleButton();
+  toast('Таймер сброшен');
+}
+
+/* ============================================================
+   СТАРТ
+============================================================ */
+checkTimerDate();
+renderCards();
+renderHabits();
+renderTasks();
+updateTimerUI();
+
+document.getElementById('inputHours').addEventListener('input', () => { if (!timerRunning) applyInputs(); });
+document.getElementById('inputMinutes').addEventListener('input', () => { if (!timerRunning) applyInputs(); });
+document.getElementById('inputSeconds').addEventListener('input', () => { if (!timerRunning) applyInputs(); });
+</script>
+</body>
+</html>

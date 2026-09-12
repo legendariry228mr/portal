@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ГДЗ 6 класс</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    color: #fff; padding: 20px;
+    display: flex; justify-content: center;
+  }
+  .app { width: 100%; max-width: 1100px; display: flex; flex-direction: column; gap: 16px; }
+  .header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 20px; background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+  }
+  .logo {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: linear-gradient(135deg, #4ade80, #00d4ff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; box-shadow: 0 0 25px rgba(74,222,128,0.6);
+  }
+  .header h1 {
+    font-size: 22px;
+    background: linear-gradient(135deg, #4ade80, #00d4ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .header p { font-size: 12px; color: #888; }
+  .layout {
+    display: grid; grid-template-columns: 260px 1fr;
+    gap: 16px; min-height: 600px;
+  }
+  .sidebar {
+    background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 16px; overflow-y: auto; max-height: 700px;
+  }
+  .sidebar h3 {
+    font-size: 12px; color: #888; text-transform: uppercase;
+    letter-spacing: 1.5px; margin-bottom: 12px;
+  }
+  .subject-btn {
+    display: block; width: 100%; text-align: left;
+    padding: 12px 14px; margin-bottom: 6px; border-radius: 10px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    color: #c0c0e0; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; font-family: inherit;
+  }
+  .subject-btn:hover { background: rgba(123,47,247,0.2); color: #fff; }
+  .subject-btn.active {
+    background: linear-gradient(135deg, #7b2ff7, #00d4ff);
+    color: #fff; border-color: transparent;
+    box-shadow: 0 5px 20px rgba(123,47,247,0.5);
+  }
+  .content {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 28px;
+    overflow-y: auto; max-height: 700px;
+  }
+  .content h2 {
+    font-size: 26px; margin-bottom: 20px;
+    background: linear-gradient(135deg, #4ade80, #00d4ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .task {
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px; padding: 18px; margin-bottom: 14px;
+    transition: all 0.2s;
+  }
+  .task:hover { border-color: rgba(123,47,247,0.4); }
+  .task-num {
+    display: inline-block; padding: 4px 12px;
+    background: linear-gradient(135deg, #7b2ff7, #00d4ff);
+    border-radius: 8px; font-size: 12px; font-weight: 800; margin-bottom: 10px;
+  }
+  .task-question { font-size: 15px; font-weight: 600; color: #e0e0f0; margin-bottom: 12px; line-height: 1.5; }
+  .task-answer {
+    background: rgba(74,222,128,0.08); border-left: 3px solid #4ade80;
+    padding: 12px 16px; border-radius: 8px;
+    font-size: 14px; color: #c0f0d0; line-height: 1.6;
+  }
+  .task-answer b { color: #4ade80; }
+  .placeholder { text-align: center; color: #666; padding: 60px 20px; font-size: 15px; }
+  .placeholder .icon { font-size: 60px; margin-bottom: 16px; }
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { max-height: 300px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="logo">📚</div>
+    <div>
+      <h1>ГДЗ 6 класс</h1>
+      <p>Ответы на вопросы по всем предметам</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <h3>Предметы</h3>
+      <button class="subject-btn" onclick="showSubject('math')">🔢 Математика</button>
+      <button class="subject-btn" onclick="showSubject('russian')">📝 Русский язык</button>
+      <button class="subject-btn" onclick="showSubject('history')">🏛 История</button>
+      <button class="subject-btn" onclick="showSubject('geography')">🌍 География</button>
+      <button class="subject-btn" onclick="showSubject('biology')">🌱 Биология</button>
+      <button class="subject-btn" onclick="showSubject('english')">🇬🇧 Английский</button>
+      <button class="subject-btn" onclick="showSubject('literature')">📖 Литература</button>
+      <button class="subject-btn" onclick="showSubject('social')">🏛 Обществознание</button>
+    </div>
+
+    <div class="content" id="content">
+      <div class="placeholder">
+        <div class="icon">👈</div>
+        <div>Выбери предмет слева — появятся ответы на задания.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const SUBJECTS = {
+    math: {
+      title: '🔢 Математика',
+      tasks: [
+        { num: '№1', q: 'Найдите значение выражения: 25 × 4 + 30 ÷ 6', a: '<b>Ответ:</b> 25 × 4 = 100, 30 ÷ 6 = 5. Итого: <b>100 + 5 = 105</b>.' },
+        { num: '№2', q: 'Решите уравнение: 3x + 15 = 45', a: '<b>Ответ:</b> 3x = 45 − 15 = 30, x = 30 ÷ 3 = <b>10</b>.' },
+        { num: '№3', q: 'Сократите дробь: 24/36', a: '<b>Ответ:</b> НОД(24, 36) = 12. Делим: 24 ÷ 12 = 2, 36 ÷ 12 = 3. Получаем <b>2/3</b>.' },
+        { num: '№4', q: 'Найдите 25% от числа 240.', a: '<b>Ответ:</b> 25% = 1/4. 240 ÷ 4 = <b>60</b>.' },
+        { num: '№5', q: 'Вычислите: 15 × 8 − 42 ÷ 7 + 9', a: '<b>Ответ:</b> 15 × 8 = 120, 42 ÷ 7 = 6. 120 − 6 + 9 = <b>123</b>.' },
+        { num: '№6', q: 'Решите: 5(2x − 3) = 25', a: '<b>Ответ:</b> 10x − 15 = 25 → 10x = 40 → x = <b>4</b>.' },
+        { num: '№7', q: 'Найдите площадь прямоугольника 12 см × 8 см.', a: '<b>Ответ:</b> S = a × b = 12 × 8 = <b>96 см²</b>.' },
+        { num: '№8', q: 'Переведите 3,5 км в метры.', a: '<b>Ответ:</b> 3,5 × 1000 = <b>3500 метров</b>.' },
+        { num: '№9', q: 'Сложите дроби: 1/4 + 2/3', a: '<b>Ответ:</b> Общий знаменатель 12. 3/12 + 8/12 = <b>11/12</b>.' },
+        { num: '№10', q: 'Найдите периметр квадрата со стороной 7 см.', a: '<b>Ответ:</b> P = 4 × 7 = <b>28 см</b>.' }
+      ]
+    },
+    russian: {
+      title: '📝 Русский язык',
+      tasks: [
+        { num: '№1', q: 'Что такое имя существительное?', a: '<b>Ответ:</b> Имя существительное — часть речи, обозначающая предмет и отвечающая на вопросы «кто?» или «что?». Примеры: стол, кошка, город.' },
+        { num: '№2', q: 'Разберите по составу слово «пришкольный».', a: '<b>Ответ:</b> Приставка — <b>при-</b>, корень — <b>-школь-</b>, суффикс — <b>-н-</b>, окончание — <b>-ый</b>.' },
+        { num: '№3', q: 'Что такое глагол?', a: '<b>Ответ:</b> Глагол — часть речи, обозначающая действие или состояние. Отвечает на вопросы «что делать?», «что сделать?». Примеры: бежать, читать, спать.' },
+        { num: '№4', q: 'Объясните разницу между «одеть» и «надеть».', a: '<b>Ответ:</b> «Одеть» — кого-то (одеть ребёнка). «Надеть» — что-то на себя (надеть шапку).' },
+        { num: '№5', q: 'Что такое приставка?', a: '<b>Ответ:</b> Приставка — часть слова перед корнем, изменяющая его значение. Пример: ходить → приходить.' },
+        { num: '№6', q: 'Определите род слова «пальто».', a: '<b>Ответ:</b> Пальто — <b>средний род</b>. Несклоняемое существительное.' },
+        { num: '№7', q: 'Что такое синонимы?', a: '<b>Ответ:</b> Синонимы — слова, близкие по значению, но разные по написанию. Пример: красивый — прекрасный.' }
+      ]
+    },
+    history: {
+      title: '🏛 История',
+      tasks: [
+        { num: '№1', q: 'Когда крестился Хлодвиг?', a: '<b>Ответ:</b> Хлодвиг крестился в <b>496 году</b>. Это укрепило его власть и дало поддержку церкви.' },
+        { num: '№2', q: 'Что такое реформа Карла Мартелла?', a: '<b>Ответ:</b> Реформа Карла Мартелла — раздача земель (бенефициев) за военную службу. Это создало тяжёлую конницу и усилило власть.' },
+        { num: '№3', q: 'В каком году распалась империя Карла Великого?', a: '<b>Ответ:</b> Империя распалась в <b>843 году</b> по Верденскому договору — разделена между тремя внуками Карла.' },
+        { num: '№4', q: 'Кто такие франки?', a: '<b>Ответ:</b> Франки — германское племя, которое в V веке захватило Галлию и создало Франкское королевство.' },
+        { num: '№5', q: 'Что такое феодальная раздробленность?', a: '<b>Ответ:</b> Феодальная раздробленность — распад государства на отдельные владения, где правители были почти независимы.' },
+        { num: '№6', q: 'Кто такой Карл Великий?', a: '<b>Ответ:</b> Карл Великий (768–814) — король франков, в 800 году коронован как император. Объединил большую часть Европы.' },
+        { num: '№7', q: 'Что такое Крестовые походы?', a: '<b>Ответ:</b> Крестовые походы (XI–XIII вв.) — военные походы европейцев на Ближний Восток для освобождения Иерусалима.' }
+      ]
+    },
+    geography: {
+      title: '🌍 География',
+      tasks: [
+        { num: '№1', q: 'Что такое гидросфера?', a: '<b>Ответ:</b> Гидросфера — водная оболочка Земли. Включает океаны, реки, озёра, ледники и подземные воды.' },
+        { num: '№2', q: 'Какие объекты гидросферы находятся рядом с твоим городом?', a: '<b>Ответ:</b> Реки, озёра, болота, подземные воды. Например, река Москва, пруды, родники.' },
+        { num: '№3', q: 'Почему Солнце называют двигателем круговорота воды?', a: '<b>Ответ:</b> Солнце нагревает воду, она испаряется, образует облака, выпадает осадками и возвращается в океан — цикл повторяется.' },
+        { num: '№4', q: 'Что такое атмосфера?', a: '<b>Ответ:</b> Атмосфера — воздушная оболочка Земли. Состоит из азота (78%), кислорода (21%) и других газов.' },
+        { num: '№5', q: 'Что такое литосфера?', a: '<b>Ответ:</b> Литосфера — твёрдая оболочка Земли: земная кора и верхняя часть мантии.' },
+        { num: '№6', q: 'Назовите самые большие океаны.', a: '<b>Ответ:</b> Тихий (самый большой), Атлантический, Индийский, Северный Ледовитый.' },
+        { num: '№7', q: 'Что такое рельеф?', a: '<b>Ответ:</b> Рельеф — совокупность неровностей земной поверхности: горы, равнины, холмы, овраги.' }
+      ]
+    },
+    biology: {
+      title: '🌱 Биология',
+      tasks: [
+        { num: '№1', q: 'Какие процессы жизнедеятельности протекают в клетке?', a: '<b>Ответ:</b> Клетка питается, дышит, выделяет вещества, размножается — то есть живёт.' },
+        { num: '№2', q: 'Что такое тургор?', a: '<b>Ответ:</b> Тургор — сила внутри клетки, прижимающая мембрану к стенке. Поддерживает форму растения.' },
+        { num: '№3', q: 'Как происходит деление клеток?', a: '<b>Ответ:</b> Удвоение хромосом → растворение ядерной оболочки → расхождение хромосом → образование двух дочерних клеток.' },
+        { num: '№4', q: 'Что такое фотосинтез?', a: '<b>Ответ:</b> Фотосинтез — процесс, при котором растения из воды и CO₂ на свету создают органические вещества и выделяют кислород.' },
+        { num: '№5', q: 'Что такое клетка?', a: '<b>Ответ:</b> Клетка — наименьшая структурная единица живого. Состоит из мембраны, цитоплазмы и ядра.' },
+        { num: '№6', q: 'Какие бывают ткани у растений?', a: '<b>Ответ:</b> Покровные, основные, проводящие, механические и образовательные.' }
+      ]
+    },
+    english: {
+      title: '🇬🇧 Английский язык',
+      tasks: [
+        { num: '№1', q: 'Как образовать Present Simple?', a: '<b>Ответ:</b> I/You/We/They + глагол; He/She/It + глагол + -s. Вопрос: Do/Does + подлежащее + глагол?' },
+        { num: '№2', q: 'Переведи: «Я люблю читать книги».', a: '<b>Ответ:</b> <b>I like to read books.</b>' },
+        { num: '№3', q: 'Как образовать Past Simple правильных глаголов?', a: '<b>Ответ:</b> Добавить <b>-ed</b>: work → worked, play → played.' },
+        { num: '№4', q: 'Переведи: «Она поёт песню».', a: '<b>Ответ:</b> <b>She sings a song.</b>' },
+        { num: '№5', q: 'Что такое артикль a/an?', a: '<b>Ответ:</b> Неопределённый артикль. <b>A</b> — перед согласной (a book), <b>an</b> — перед гласной (an apple).' },
+        { num: '№6', q: 'Переведи: «Мы играем в футбол».', a: '<b>Ответ:</b> <b>We play football.</b>' }
+      ]
+    },
+    literature: {
+      title: '📖 Литература',
+      tasks: [
+        { num: '№1', q: 'Кто написал «Дубровский»?', a: '<b>Ответ:</b> Александр Сергеевич Пушкин. Роман написан в 1832–1833 годах.' },
+        { num: '№2', q: 'Что такое басня?', a: '<b>Ответ:</b> Басня — короткий нравоучительный рассказ, часто в стихах, с моралью. Главные герои — животные.' },
+        { num: '№3', q: 'Кто написал «Ворона и Лисица»?', a: '<b>Ответ:</b> Иван Андреевич Крылов.' },
+        { num: '№4', q: 'Что такое былина?', a: '<b>Ответ:</b> Былина — русская народная эпическая песня о богатырях. Пример: «Илья Муромец и Соловей-разбойник».' },
+        { num: '№5', q: 'Кто автор «Тараса Бульбы»?', a: '<b>Ответ:</b> Николай Васильевич Гоголь.' },
+        { num: '№6', q: 'Что такое эпитет?', a: '<b>Ответ:</b> Эпитет — художественное определение, подчёркивающее свойство предмета. Пример: «золотая осень».' }
+      ]
+    },
+    social: {
+      title: '🏛 Обществознание',
+      tasks: [
+        { num: '№1', q: 'Что такое общество?', a: '<b>Ответ:</b> Общество — совокупность людей, объединённых совместной жизнью и деятельностью.' },
+        { num: '№2', q: 'Что такое личность?', a: '<b>Ответ:</b> Личность — человек как член общества, обладающий сознанием, характером и своими взглядами.' },
+        { num: '№3', q: 'Какие бывают потребности человека?', a: '<b>Ответ:</b> Биологические (еда, сон), социальные (общение), духовные (знания, искусство).' },
+        { num: '№4', q: 'Что такое деятельность?', a: '<b>Ответ:</b> Деятельность — способ отношения человека к миру, направленный на достижение цели.' },
+        { num: '№5', q: 'Что такое семья?', a: '<b>Ответ:</b> Семья — малая группа, основанная на браке или родстве, члены которой связаны общим бытом.' },
+        { num: '№6', q: 'Что такое школа как социальный институт?', a: '<b>Ответ:</b> Школа — социальный институт, где дети получают знания, умения и навыки, готовятся к жизни в обществе.' }
+      ]
+    }
+  };
+
+  function showSubject(key) {
+    const data = SUBJECTS[key];
+    if (!data) return;
+
+    document.querySelectorAll('.subject-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    const content = document.getElementById('content');
+    let html = '<h2>' + data.title + '</h2>';
+
+    data.tasks.forEach(t => {
+      html += `
+        <div class="task">
+          <div class="task-num">${t.num}</div>
+          <div class="task-question">${t.q}</div>
+          <div class="task-answer">${t.a}</div>
+        </div>
+      `;
+    });
+
+    content.innerHTML = html;
+    content.scrollTop = 0;
+  }
+</script>
+</body>
+</html>

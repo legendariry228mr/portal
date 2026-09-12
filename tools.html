@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛠 Мастерская · 10 инструментов</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%237b2ff7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23g)'/%3E%3Ctext x='50%25' y='60%25' font-family='Arial,sans-serif' font-size='250' font-weight='900' fill='%23ffffff' text-anchor='middle' dominant-baseline='middle'%3E🛠%3C/text%3E%3C/svg%3E">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    color: #fff; padding: 16px;
+    display: flex; justify-content: center;
+  }
+  .app { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 16px; }
+
+  .header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #fbbf24, #7b2ff7);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(123,47,247,0.4);
+  }
+  .header h1 { font-size: 24px; font-weight: 900; }
+  .header p { font-size: 12px; opacity: 0.9; }
+  .back-btn {
+    margin-left: auto;
+    padding: 10px 20px; border-radius: 12px;
+    background: rgba(255,255,255,0.25);
+    border: 2px solid rgba(255,255,255,0.4);
+    color: #fff; text-decoration: none;
+    font-size: 14px; font-weight: 700;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.4); }
+
+  .tabs {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    background: rgba(0,0,0,0.4);
+    padding: 6px; border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .tab {
+    padding: 10px 16px; border-radius: 10px;
+    background: transparent; border: none;
+    color: #c0c0e0; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab:hover { color: #fff; background: rgba(255,255,255,0.05); }
+  .tab.active {
+    background: linear-gradient(135deg, #fbbf24, #7b2ff7);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(123,47,247,0.5);
+  }
+
+  .panel { display: none; animation: fadeIn 0.3s; }
+  .panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; padding: 24px;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .field label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1.5px; }
+  .field input, .field select, .field textarea {
+    padding: 12px 16px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: #fff; font-size: 14px;
+    outline: none; font-family: inherit;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: #fbbf24;
+    box-shadow: 0 0 0 3px rgba(251,191,36,0.2);
+  }
+  .field option { background: #1a1a2e; }
+  .field textarea { resize: vertical; min-height: 80px; }
+
+  button {
+    padding: 12px 24px; border: none; border-radius: 12px;
+    background: linear-gradient(135deg, #fbbf24, #7b2ff7);
+    color: #fff; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: transform 0.2s;
+    box-shadow: 0 4px 20px rgba(123,47,247,0.4);
+    margin-right: 8px; margin-bottom: 8px;
+  }
+  button:hover { transform: translateY(-2px); }
+  button.danger { background: linear-gradient(135deg, #f87171, #dc2626); }
+  button.green { background: linear-gradient(135deg, #4ade80, #22c55e); }
+  button.gray { background: rgba(255,255,255,0.1); box-shadow: none; }
+
+  .result {
+    background: #0d0d1a;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 16px;
+    margin-top: 12px; font-family: 'Consolas', monospace;
+    font-size: 14px; word-wrap: break-word;
+    min-height: 40px;
+  }
+
+  /* КАЛЬКУЛЯТОР */
+  .calc-display {
+    background: #0d0d1a; border-radius: 16px;
+    padding: 20px; margin-bottom: 16px;
+    text-align: right; font-family: monospace;
+  }
+  .calc-expr { font-size: 14px; color: #888; min-height: 20px; }
+  .calc-value { font-size: 36px; font-weight: 900; color: #fbbf24; margin-top: 4px; word-break: break-all; }
+  .calc-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .calc-btn {
+    padding: 18px 8px; border-radius: 12px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff; font-size: 18px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s;
+    margin: 0;
+  }
+  .calc-btn:hover { background: rgba(251,191,36,0.3); transform: scale(1.05); }
+  .calc-btn.op { background: linear-gradient(135deg, #7b2ff7, #00d4ff); }
+  .calc-btn.op:hover { transform: scale(1.05); }
+  .calc-btn.eq { background: linear-gradient(135deg, #4ade80, #22c55e); }
+  .calc-btn.clear { background: linear-gradient(135deg, #f87171, #dc2626); }
+
+  /* СЕКУНДОМЕР */
+  .stopwatch-display {
+    font-size: 60px; font-weight: 900; text-align: center;
+    font-family: monospace; color: #fbbf24;
+    text-shadow: 0 0 30px rgba(251,191,36,0.5);
+    padding: 30px 0; letter-spacing: 4px;
+  }
+  .stopwatch-controls { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+  /* ЗАМЕТКИ */
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px; margin-top: 16px;
+  }
+  .note {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #000; padding: 16px; border-radius: 14px;
+    position: relative; min-height: 120px;
+    display: flex; flex-direction: column;
+    font-size: 14px;
+  }
+  .note-text { flex: 1; white-space: pre-wrap; word-wrap: break-word; }
+  .note-date { font-size: 10px; opacity: 0.7; margin-top: 8px; }
+  .note-delete {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(0,0,0,0.3); color: #fff;
+    border: none; width: 24px; height: 24px;
+    border-radius: 50%; cursor: pointer;
+    font-size: 12px; padding: 0; margin: 0;
+  }
+
+  /* TODO */
+  .todo-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; background: rgba(255,255,255,0.05);
+    border-radius: 12px; margin-bottom: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .todo-item.done { opacity: 0.5; text-decoration: line-through; }
+  .todo-check {
+    width: 24px; height: 24px; border-radius: 6px;
+    border: 2px solid #fbbf24;
+    background: transparent; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #fbbf24; padding: 0; margin: 0;
+  }
+  .todo-check.checked { background: #fbbf24; color: #000; }
+  .todo-text { flex: 1; font-size: 14px; }
+  .todo-time { font-size: 11px; color: #888; }
+  .todo-delete {
+    background: rgba(248,113,113,0.2); color: #f87171;
+    border: 1px solid #f87171; padding: 4px 10px;
+    border-radius: 8px; font-size: 11px; cursor: pointer;
+    margin: 0;
+  }
+
+  /* QR */
+  .qr-box {
+    text-align: center; padding: 20px;
+    background: #fff; border-radius: 16px;
+    display: inline-block; margin-top: 12px;
+  }
+  .qr-box img { display: block; }
+
+  /* КАЛЕНДАРЬ */
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 4px; margin-top: 16px;
+  }
+  .cal-cell {
+    aspect-ratio: 1; padding: 4px; border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer; position: relative;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-start;
+    font-size: 13px; font-weight: 700;
+    transition: all 0.15s;
+  }
+  .cal-cell:hover { background: rgba(251,191,36,0.2); }
+  .cal-cell.today { background: linear-gradient(135deg, #fbbf24, #7b2ff7); }
+  .cal-cell.empty { background: transparent; cursor: default; }
+  .cal-cell.empty:hover { background: transparent; }
+  .cal-cell .day { font-size: 14px; }
+  .cal-cell .event-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #fbbf24; margin-top: 2px;
+  }
+  .cal-header {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 4px; margin-top: 16px;
+  }
+  .cal-header div {
+    text-align: center; font-size: 12px;
+    color: #888; font-weight: 700;
+    text-transform: uppercase;
+  }
+  .cal-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .cal-nav h3 { font-size: 18px; }
+
+  @media (max-width: 600px) {
+    .calc-grid { grid-template-columns: repeat(4, 1fr); }
+    .stopwatch-display { font-size: 40px; }
+    .tab { font-size: 11px; padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div style="font-size: 32px;">🛠</div>
+    <div>
+      <h1>Мастерская</h1>
+      <p>10 инструментов в одном месте</p>
+    </div>
+    <a class="back-btn" href="2test.html">← В портал</a>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('calc', event)">🧮 Калькулятор</button>
+    <button class="tab" onclick="showTab('currency', event)">💱 Валюты</button>
+    <button class="tab" onclick="showTab('timer', event)">⏱ Секундомер</button>
+    <button class="tab" onclick="showTab('notes', event)">📝 Заметки</button>
+    <button class="tab" onclick="showTab('todo', event)">✅ Дела</button>
+    <button class="tab" onclick="showTab('pass', event)">🔐 Пароли</button>
+    <button class="tab" onclick="showTab('qr', event)">📱 QR</button>
+    <button class="tab" onclick="showTab('calendar', event)">📅 Календарь</button>
+    <button class="tab" onclick="showTab('weather', event)">🌤 Погода</button>
+    <button class="tab" onclick="showTab('rates', event)">📊 Курсы</button>
+  </div>
+
+  <!-- КАЛЬКУЛЯТОР -->
+  <div class="panel active" id="panel-calc">
+    <div class="card">
+      <div class="calc-display">
+        <div class="calc-expr" id="calcExpr"></div>
+        <div class="calc-value" id="calcValue">0</div>
+      </div>
+      <div class="calc-grid" id="calcGrid"></div>
+    </div>
+  </div>
+
+  <!-- ВАЛЮТЫ -->
+  <div class="panel" id="panel-currency">
+    <div class="card">
+      <h2 style="margin-bottom: 16px;">💱 Конвертер валют</h2>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <div class="field" style="flex: 1;">
+          <label>Сумма</label>
+          <input type="number" id="currAmount" value="100">
+        </div>
+        <div class="field" style="flex: 1;">
+          <label>Из</label>
+          <select id="currFrom">
+            <option value="RUB">🇷🇺 Рубль</option>
+            <option value="USD" selected>🇺🇸 Доллар</option>
+            <option value="EUR">🇪🇺 Евро</option>
+          </select>
+        </div>
+        <div class="field" style="flex: 1;">
+          <label>В</label>
+          <select id="currTo">
+            <option value="RUB" selected>🇷🇺 Рубль</option>
+            <option value="USD">🇺🇸 Доллар</option>
+            <option value="EUR">🇪🇺 Евро</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="convertCurrency()">💱 Конвертировать</button>
+      <div class="result" id="currResult">Введи сумму и нажми кнопку</div>
+    </div>
+  </div>
+
+  <!-- СЕКУНДОМЕР -->
+  <div class="panel" id="panel-timer">
+    <div class="card">
+      <div class="stopwatch-display" id="stopwatch">00:00:00</div>
+      <div class="stopwatch-controls">
+        <button class="green" id="swStart" onclick="toggleStopwatch()">▶ Старт</button>
+        <button class="gray" onclick="resetStopwatch()">↺ Сброс</button>
+        <button class="gray" onclick="lapStopwatch()">⚑ Круг</button>
+      </div>
+      <div class="result" id="laps" style="margin-top: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- ЗАМЕТКИ -->
+  <div class="panel" id="panel-notes">
+    <div class="card">
+      <h2 style="margin-bottom: 16px;">📝 Заметки</h2>
+      <div class="field">
+        <label>Новая заметка</label>
+        <textarea id="noteText" placeholder="Напиши что-нибудь..."></textarea>
+      </div>
+      <button onclick="addNote()">➕ Добавить</button>
+      <div class="notes-grid" id="notesGrid"></div>
+    </div>
+  </div>
+
+  <!-- TODO -->
+  <div class="panel" id="panel-todo">
+    <div class="card">
+      <h2 style="margin-bottom: 16px;">✅ Список дел</h2>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <input type="text" id="todoText" placeholder="Что надо сделать?" style="flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: #fff; outline: none; min-width: 200px;">
+        <input type="datetime-local" id="todoTime" style="padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: #fff; outline: none;">
+        <button onclick="addTodo()">➕ Добавить</button>
+      </div>
+      <div id="todoList" style="margin-top: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- ПАРОЛИ -->
+  <div class="panel" id="panel-pass">
+    <div class="card">
+      <h2 style="margin-bottom: 16px;">🔐 Генератор паролей</h2>
+      <div class="field">
+        <label>Длина пароля</label>
+        <input type="number" id="passLen" value="16" min="4" max="64">
+      </div>
+      <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px;">
+        <label style="display: flex; gap: 6px; align-items: center; cursor: pointer;">
+          <input type="checkbox" id="passUpper" checked> Заглавные (A-Z)
+        </label>
+        <label style="display: flex; gap: 6px; align-items: center; cursor: pointer;">
+          <input type="checkbox" id="passLower" checked> Строчные (a-z)
+        </label>
+        <label style="display: flex; gap: 6px; align-items: center; cursor: pointer;">
+          <input type="checkbox" id="passDigits" checked> Цифры (0-9)
+        </label>
+        <label style="display: flex; gap: 6px; align-items: center; cursor: pointer;">
+          <input type="checkbox" id="passSymbols" checked> Символы (!@#$)
+        </label>
+      </div>
+      <button onclick="genPassword()">🎲 Сгенерировать</button>
+      <div class="result" id="passResult" style="font-size: 18px; word-break: break-all;"></div>
+    </div>
+  </div>
+
+  <!-- QR -->
+  <div class="panel" id="panel-qr">
+    <div class="card">
+      <h2 style="margin-bottom: 16px;">📱 QR-код генератор</h2>
+      <div class="field">
+        <label>Ссылка или текст</label>
+        <input type="text" id="qrText" value="https://example.com" placeholder="Введи текст...">
+      </div>
+      <button onclick="genQR()">🎨 Сгенерировать QR</button>
+      <div id="qrBox"></div>
+    </div>
+  </div>
+
+  <!-- КАЛЕНДАРЬ -->
+  <div class="panel" id="panel-calendar">
+    <div class="card">
+      <div class="cal-nav">
+        <button class="gray" onclick="changeMonth(-1)">←</button>
+        <h3 id="calTitle">Сентябрь 2026</h3>
+        <button class="gray" onclick="changeMonth(1)">→</button>
+      </div>
+      <div class="cal-header">
+        <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div id="calEvents" style="margin-top: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- ПОГОДА -->
+  <div class="panel" id="panel-weather">
+    <div class="card">
+      <h2 style="margin-bottom: 16px;">🌤 Погода</h2>
+      <div class="field">
+        <label>Город</label>
+        <input type="text" id="weatherCity" value="Moscow" placeholder="Например: Moscow">
+      </div>
+      <button onclick="getWeather()">🌤 Узнать погоду</button>
+      <div class="result" id="weatherResult">Нажми кнопку — узнаешь погоду</div>
+      <p style="font-size: 11px; color: #666; margin-top: 8px;">Работает через open-meteo.com (бесплатный API)</p>
+    </div>
+  </div>
+
+  <!-- КУРСЫ -->
+  <div class="panel" id="panel-rates">
+    <div class="card">
+      <h2 style="margin-bottom: 16px;">📊 Курсы валют</h2>
+      <button onclick="getRates()">📊 Загрузить курсы</button>
+      <div class="result" id="ratesResult">Нажми кнопку — загрузятся курсы</div>
+      <p style="font-size: 11px; color: #666; margin-top: 8px;">Работает через open.er-api.com (бесплатный API)</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============ TABS ============ */
+function showTab(name, e) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+
+  if (name === 'notes') renderNotes();
+  if (name === 'todo') renderTodo();
+  if (name === 'calendar') renderCalendar();
+}
+
+/* ============ КАЛЬКУЛЯТОР ============ */
+const calcButtons = [
+  'C', '⌫', '(', ')', '÷',
+  '7', '8', '9', '√', '×',
+  '4', '5', '6', '^', '-',
+  '1', '2', '3', '%', '+',
+  '0', '.', 'π', 'e', '='
+];
+let calcExpr = '';
+
+function buildCalc() {
+  const grid = document.getElementById('calcGrid');
+  grid.innerHTML = '';
+  calcButtons.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'calc-btn';
+    if (['÷', '×', '-', '+', '^', '%', '√'].includes(b)) btn.classList.add('op');
+    if (b === '=') btn.classList.add('eq');
+    if (b === 'C') btn.classList.add('clear');
+    btn.textContent = b;
+    btn.onclick = () => pressCalc(b);
+    grid.appendChild(btn);
+  });
+}
+
+function pressCalc(b) {
+  const exprEl = document.getElementById('calcExpr');
+  const valEl = document.getElementById('calcValue');
+
+  if (b === 'C') { calcExpr = ''; exprEl.textContent = ''; valEl.textContent = '0'; return; }
+  if (b === '⌫') { calcExpr = calcExpr.slice(0, -1); exprEl.textContent = calcExpr; return; }
+  if (b === '=') {
+    try {
+      let expr = calcExpr
+        .replace(/÷/g, '/').replace(/×/g, '*')
+        .replace(/\^/g, '**').replace(/π/g, 'Math.PI')
+        .replace(/e/g, 'Math.E').replace(/√/g, 'Math.sqrt')
+        .replace(/%/g, '/100');
+      const result = eval(expr);
+      valEl.textContent = result;
+      calcExpr = String(result);
+      exprEl.textContent = '';
+    } catch (e) {
+      valEl.textContent = 'Ошибка';
+    }
+    return;
+  }
+  calcExpr += b;
+  exprEl.textContent = calcExpr;
+  try {
+    let expr = calcExpr
+      .replace(/÷/g, '/').replace(/×/g, '*')
+      .replace(/\^/g, '**').replace(/π/g, 'Math.PI')
+      .replace(/e/g, 'Math.E').replace(/√/g, 'Math.sqrt')
+      .replace(/%/g, '/100');
+    valEl.textContent = eval(expr);
+  } catch (e) {}
+}
+buildCalc();
+
+/* ============ ВАЛЮТЫ ============ */
+function convertCurrency() {
+  const amount = parseFloat(document.getElementById('currAmount').value);
+  const from = document.getElementById('currFrom').value;
+  const to = document.getElementById('currTo').value;
+
+  const rates = { RUB: 1, USD: 0.011, EUR: 0.010 };
+  const inRub = amount / rates[from];
+  const result = inRub * rates[to];
+
+  document.getElementById('currResult').textContent =
+    amount + ' ' + from + ' ≈ ' + result.toFixed(2) + ' ' + to;
+}
+
+/* ============ СЕКУНДОМЕР ============ */
+let swInterval = null, swStart = 0, swElapsed = 0, swRunning = false;
+let laps = [];
+
+function toggleStopwatch() {
+  if (swRunning) {
+    clearInterval(swInterval);
+    swRunning = false;
+    document.getElementById('swStart').textContent = '▶ Старт';
+  } else {
+    swStart = Date.now() - swElapsed;
+    swInterval = setInterval(() => {
+      swElapsed = Date.now() - swStart;
+      updateSw();
+    }, 30);
+    swRunning = true;
+    document.getElementById('swStart').textContent = '⏸ Пауза';
+  }
+}
+
+function updateSw() {
+  const ms = swElapsed;
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor(ms % 3600000 / 60000);
+  const s = Math.floor(ms % 60000 / 1000);
+  const cs = Math.floor(ms % 1000 / 10);
+  document.getElementById('stopwatch').textContent =
+    String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0') + '.' + String(cs).padStart(2,'0');
+}
+
+function resetStopwatch() {
+  clearInterval(swInterval);
+  swRunning = false;
+  swElapsed = 0;
+  laps = [];
+  updateSw();
+  document.getElementById('swStart').textContent = '▶ Старт';
+  document.getElementById('laps').textContent = '';
+}
+
+function lapStopwatch() {
+  if (!swRunning) return;
+  laps.push(document.getElementById('stopwatch').textContent);
+  document.getElementById('laps').innerHTML = laps.map((l, i) => 'Круг ' + (i+1) + ': ' + l).join('<br>');
+}
+
+/* ============ ЗАМЕТКИ ============ */
+function getNotes() { return JSON.parse(localStorage.getItem('notes') || '[]'); }
+function saveNotes(n) { localStorage.setItem('notes', JSON.stringify(n)); }
+
+function addNote() {
+  const text = document.getElementById('noteText').value.trim();
+  if (!text) return;
+  const notes = getNotes();
+  notes.unshift({ text, date: new Date().toLocaleString() });
+  saveNotes(notes);
+  document.getElementById('noteText').value = '';
+  renderNotes();
+}
+
+function renderNotes() {
+  const notes = getNotes();
+  const grid = document.getElementById('notesGrid');
+  if (notes.length === 0) {
+    grid.innerHTML = '<p style="color: #888; text-align: center; padding: 20px; grid-column: 1/-1;">Пока нет заметок</p>';
+    return;
+  }
+  grid.innerHTML = notes.map((n, i) => `
+    <div class="note">
+      <button class="note-delete" onclick="deleteNote(${i})">✕</button>
+      <div class="note-text">${n.text}</div>
+      <div class="note-date">${n.date}</div>
+    </div>
+  `).join('');
+}
+
+function deleteNote(i) {
+  const notes = getNotes();
+  notes.splice(i, 1);
+  saveNotes(notes);
+  renderNotes();
+}
+
+/* ============ TODO ============ */
+function getTodos() { return JSON.parse(localStorage.getItem('todos') || '[]'); }
+function saveTodos(t) { localStorage.setItem('todos', JSON.stringify(t)); }
+
+function addTodo() {
+  const text = document.getElementById('todoText').value.trim();
+  const time = document.getElementById('todoTime').value;
+  if (!text) return;
+  const todos = getTodos();
+  todos.unshift({ text, time, done: false });
+  saveTodos(todos);
+  document.getElementById('todoText').value = '';
+  document.getElementById('todoTime').value = '';
+  renderTodo();
+}
+
+function toggleTodo(i) {
+  const todos = getTodos();
+  todos[i].done = !todos[i].done;
+  saveTodos(todos);
+  renderTodo();
+}
+
+function deleteTodo(i) {
+  const todos = getTodos();
+  todos.splice(i, 1);
+  saveTodos(todos);
+  renderTodo();
+}
+
+function renderTodo() {
+  const todos = getTodos();
+  const list = document.getElementById('todoList');
+  if (todos.length === 0) {
+    list.innerHTML = '<p style="color: #888; text-align: center; padding: 20px;">Пока нет дел</p>';
+    return;
+  }
+  list.innerHTML = todos.map((t, i) => `
+    <div class="todo-item ${t.done ? 'done' : ''}">
+      <button class="todo-check ${t.done ? 'checked' : ''}" onclick="toggleTodo(${i})">${t.done ? '✓' : ''}</button>
+      <div style="flex: 1;">
+        <div class="todo-text">${t.text}</div>
+        ${t.time ? '<div class="todo-time">⏰ ' + new Date(t.time).toLocaleString() + '</div>' : ''}
+      </div>
+      <button class="todo-delete" onclick="deleteTodo(${i})">🗑</button>
+    </div>
+  `).join('');
+}
+
+/* ============ ПАРОЛИ ============ */
+function genPassword() {
+  const len = parseInt(document.getElementById('passLen').value);
+  let chars = '';
+  if (document.getElementById('passUpper').checked) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if (document.getElementById('passLower').checked) chars += 'abcdefghijklmnopqrstuvwxyz';
+  if (document.getElementById('passDigits').checked) chars += '0123456789';
+  if (document.getElementById('passSymbols').checked) chars += '!@#$%^&*()_+-=[]{}';
+
+  if (!chars) { document.getElementById('passResult').textContent = 'Выбери хотя бы один тип символов'; return; }
+
+  let pass = '';
+  for (let i = 0; i < len; i++) {
+    pass += chars[Math.floor(Math.random() * chars.length)];
+  }
+  document.getElementById('passResult').textContent = pass;
+}
+
+/* ============ QR ============ */
+function genQR() {
+  const text = document.getElementById('qrText').value.trim();
+  if (!text) return;
+  const url = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(text);
+  document.getElementById('qrBox').innerHTML = '<div class="qr-box"><img src="' + url + '" alt="QR"></div>';
+}
+
+/* ============ КАЛЕНДАРЬ ============ */
+let calDate = new Date();
+let calEvents = JSON.parse(localStorage.getItem('calEvents') || '{}');
+
+function renderCalendar() {
+  const year = calDate.getFullYear();
+  const month = calDate.getMonth();
+  const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  document.getElementById('calTitle').textContent = monthNames[month] + ' ' + year;
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const offset = (firstDay === 0 ? 7 : firstDay) - 1;
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  for (let i = 0; i < offset; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell empty';
+    grid.appendChild(cell);
+  }
+
+  const today = new Date();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell';
+    if (year === today.getFullYear() && month === today.getMonth() && d === today.getDate()) {
+      cell.classList.add('today');
+    }
+    cell.innerHTML = '<div class="day">' + d + '</div>';
+    const key = year + '-' + (month + 1) + '-' + d;
+    if (calEvents[key]) {
+      cell.innerHTML += '<div class="event-dot"></div>';
+    }
+    cell.onclick = () => addCalEvent(key);
+    grid.appendChild(cell);
+  }
+
+  document.getElementById('calEvents').innerHTML = Object.keys(calEvents).map(k =>
+    '<div style="padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 6px;"><b>' + k + ':</b> ' + calEvents[k] + '</div>'
+  ).join('');
+}
+
+function changeMonth(dir) {
+  calDate.setMonth(calDate.getMonth() + dir);
+  renderCalendar();
+}
+
+function addCalEvent(key) {
+  const text = prompt('Событие на ' + key + ':', calEvents[key] || '');
+  if (text) {
+    calEvents[key] = text;
+    localStorage.setItem('calEvents', JSON.stringify(calEvents));
+  } else if (text === '') {
+    delete calEvents[key];
+    localStorage.setItem('calEvents', JSON.stringify(calEvents));
+  }
+  renderCalendar();
+}
+
+/* ============ ПОГОДА ============ */
+async function getWeather() {
+  const city = document.getElementById('weatherCity').value.trim();
+  if (!city) return;
+  const out = document.getElementById('weatherResult');
+  out.textContent = 'Загрузка...';
+
+  try {
+    const geoRes = await fetch('https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(city) + '&count=1&language=ru');
+    const geo = await geoRes.json();
+    if (!geo.results || !geo.results[0]) { out.textContent = 'Город не найден'; return; }
+    const { latitude, longitude, name } = geo.results[0];
+
+    const wRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + latitude + '&longitude=' + longitude + '&current=temperature_2m,wind_speed_10m,weather_code');
+    const w = await wRes.json();
+    const temp = w.current.temperature_2m;
+    const wind = w.current.wind_speed_10m;
+
+    out.innerHTML = '🌍 <b>' + name + '</b><br>🌡 Температура: <b>' + temp + '°C</b><br>💨 Ветер: ' + wind + ' км/ч';
+  } catch (e) {
+    out.textContent = 'Ошибка: ' + e.message;
+  }
+}
+
+/* ============ КУРСЫ ============ */
+async function getRates() {
+  const out = document.getElementById('ratesResult');
+  out.textContent = 'Загрузка...';
+  try {
+    const res = await fetch('https://open.er-api.com/v6/latest/RUB');
+    const data = await res.json();
+    out.innerHTML = '💵 1 RUB = ' + data.rates.USD.toFixed(4) + ' USD<br>' +
+                    '💶 1 RUB = ' + data.rates.EUR.toFixed(4) + ' EUR<br>' +
+                    '💴 1 RUB = ' + data.rates.CNY.toFixed(4) + ' CNY<br>' +
+                    '💷 1 RUB = ' + data.rates.GBP.toFixed(4) + ' GBP';
+  } catch (e) {
+    out.textContent = 'Ошибка: ' + e.message;
+  }
+}
+</script>
+</body>
+</html>

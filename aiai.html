@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NiceAI - 2026</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-dark); color: #c9d1d9; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: background 0.3s ease; }
+
+        /* ЦВЕТОВЫЕ ТЕМЫ (CSS Variables) */
+        :root {
+            --bg-dark: #0d1117;
+            --bg-card: #161b22;
+            --border-color: #30363d;
+            --accent: #238636;
+            --accent-hover: #2ea043;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --danger: #da3633;
+            --danger-hover: #f85149;
+        }
+        .theme-rainbow {
+            --bg-dark: linear-gradient(135deg, #0d1117 0%, #2a1e3c 50%, #1c2e3a 100%);
+            --accent: linear-gradient(90deg, #ff007f, #ff8c00, #ffe600, #00ff00, #00bfff, #8a2be2);
+            --accent-hover: linear-gradient(90deg, #ff007f, #ff8c00, #ffe600, #00ff00, #00bfff, #8a2be2);
+        }
+        .theme-blue {
+            --bg-dark: #0a192f;
+            --bg-card: #112240;
+            --border-color: #233554;
+            --accent: #64ffda;
+            --accent-hover: #64ffda;
+        }
+        .theme-red {
+            --bg-dark: #2d0a0a;
+            --bg-card: #3d1111;
+            --border-color: #551a1a;
+            --accent: #ff5555;
+            --accent-hover: #ff7777;
+        }
+        .theme-green {
+            --bg-dark: #0a2d0a;
+            --bg-card: #113d11;
+            --border-color: #1a551a;
+            --accent: #55ff55;
+            --accent-hover: #77ff77;
+        }
+        .theme-pink {
+            --bg-dark: #2d0a1e;
+            --bg-card: #3d112a;
+            --border-color: #551a3b;
+            --accent: #ff55cc;
+            --accent-hover: #ff77dd;
+        }
+        .theme-lightblue {
+            --bg-dark: #0a1a2d;
+            --bg-card: #11263d;
+            --border-color: #1a3755;
+            --accent: #55bbff;
+            --accent-hover: #77ccff;
+        }
+        .theme-purple {
+            --bg-dark: #1a0a2d;
+            --bg-card: #26113d;
+            --border-color: #3a1a55;
+            --accent: #bb55ff;
+            --accent-hover: #cc77ff;
+        }
+        .theme-gray {
+            --bg-dark: #1a1a1a;
+            --bg-card: #2a2a2a;
+            --border-color: #444444;
+            --accent: #888888;
+            --accent-hover: #aaaaaa;
+        }
+        .theme-white {
+            --bg-dark: #f0f0f0;
+            --bg-card: #ffffff;
+            --border-color: #cccccc;
+            --accent: #000000;
+            --accent-hover: #333333;
+            --text-main: #111111;
+            --text-muted: #555555;
+        }
+        .theme-brown {
+            --bg-dark: #3e2723;
+            --bg-card: #4e342e;
+            --border-color: #6d4c41;
+            --accent: #a1887f;
+            --accent-hover: #bcaaa4;
+        }
+        .theme-yellow {
+            --bg-dark: #3d3b1c;
+            --bg-card: #4d4b2c;
+            --border-color: #6d6b3c;
+            --accent: #fdd835;
+            --accent-hover: #ffee58;
+        }
+
+        .auth-container { background: var(--bg-card); padding: 40px; border-radius: 16px; border: 1px solid var(--border-color); width: 100%; max-width: 420px; text-align: center; display: none; }
+        .auth-container.active { display: block; }
+        .auth-container h1 { font-size: 28px; margin-bottom: 10px; }
+        .auth-container p { color: var(--text-muted); margin-bottom: 10px; }
+        .input-field { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-dark); color: var(--text-main); margin-bottom: 12px; outline: none; }
+        .input-field:focus { border-color: var(--accent); }
+        .auth-btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 4px; }
+        .auth-btn:hover { background: var(--accent-hover); }
+        .switch-link { color: var(--text-muted); font-size: 13px; margin-top: 10px; display: block; cursor: pointer; text-decoration: underline; }
+        .switch-link:hover { color: var(--text-main); }
+        .error-msg { color: var(--danger); font-size: 13px; margin-bottom: 10px; display: none; }
+        .captcha-box { background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .captcha-box span { font-size: 22px; font-weight: bold; color: #f0883e; letter-spacing: 2px; }
+        .captcha-box input { width: 80px; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-dark); color: var(--text-main); text-align: center; outline: none; }
+        .captcha-box input:focus { border-color: var(--accent); }
+
+        .rules-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; }
+        .rules-container.active { display: flex; }
+        .rules-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; max-width: 550px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 30px; text-align: left; color: var(--text-main); }
+        .rules-card h2 { text-align: center; margin-bottom: 20px; font-size: 24px; }
+        .rules-card ul { list-style: none; padding: 0; }
+        .rules-card li { padding: 8px 0; border-bottom: 1px solid var(--border-color); line-height: 1.6; font-size: 14px; }
+        .rules-card button { display: block; width: 100%; margin-top: 25px; padding: 14px; background: var(--accent); border: none; border-radius: 8px; color: white; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .rules-card button:hover { background: var(--accent-hover); }
+
+        #mainMenu { display: none; width: 100%; height: 100vh; background: var(--bg-dark); flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+        #mainMenu.active { display: flex; }
+        #mainMenu h1 { font-size: 48px; margin-bottom: 10px; }
+        #mainMenu p { color: var(--text-muted); font-size: 18px; margin-bottom: 40px; }
+        .menu-grid { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; }
+        .menu-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 40px; width: 300px; cursor: pointer; transition: 0.2s; text-align: center; }
+        .menu-card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .menu-card h2 { font-size: 24px; margin-bottom: 10px; }
+        .menu-card span { font-size: 48px; display: block; margin-bottom: 15px; }
+        .menu-card p { color: var(--text-muted); font-size: 14px; }
+
+        #sidebar { position: fixed; left: 0; top: 0; width: 260px; height: 100vh; background: var(--bg-card); border-right: 1px solid var(--border-color); padding: 16px; display: flex; flex-direction: column; z-index: 100; display: none; }
+        #sidebar.active { display: flex; }
+        #sidebar .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        #sidebar .header h2 { font-size: 20px; color: var(--text-main); cursor: pointer; }
+        #sidebar .header button { background: var(--accent); border: none; border-radius: 8px; color: white; padding: 8px 12px; cursor: pointer; font-weight: bold; }
+        #sidebar .header button:hover { background: var(--accent-hover); }
+        #sidebar .mode-switch { display: flex; gap: 8px; margin-bottom: 20px; }
+        #sidebar .mode-switch button { flex: 1; padding: 8px; border: 1px solid var(--border-color); background: var(--bg-dark); color: var(--text-muted); border-radius: 8px; cursor: pointer; font-weight: bold; }
+        #sidebar .mode-switch button.active { background: var(--accent); border-color: var(--accent); color: white; }
+        #historyList { flex: 1; overflow-y: auto; padding-right: 5px; }
+        .h-item-wrapper { position: relative; display: flex; align-items: center; margin-bottom: 4px; border-radius: 6px; transition: 0.1s; }
+        .h-item-wrapper:hover { background: var(--border-color); }
+        .h-item-wrapper.pinned { border-left: 3px solid var(--accent); }
+        .h-item { flex: 1; padding: 10px; cursor: pointer; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .h-item-wrapper.active { background: #21262d; }
+        .h-item-wrapper.active .h-item { color: var(--text-main); }
+        .h-item-menu { padding: 5px 10px; cursor: pointer; color: var(--text-muted); border-radius: 4px; font-weight: bold; font-size: 16px; }
+        .h-item-menu:hover { background: var(--border-color); color: var(--text-main); }
+        .dropdown-menu { position: absolute; right: 0; top: 25px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 6px 0; min-width: 160px; display: none; z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.6); }
+        .dropdown-menu.open { display: block; }
+        .dropdown-menu div { padding: 8px 16px; cursor: pointer; font-size: 14px; color: var(--text-main); }
+        .dropdown-menu div:hover { background: var(--border-color); }
+        .dropdown-menu div.danger { color: var(--danger); }
+
+        .profile-box { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
+        .profile-box:hover { background: var(--border-color); padding: 10px; border-radius: 8px; margin-top: 10px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; color: white; }
+        .profile-name { font-weight: bold; font-size: 14px; color: var(--text-main); }
+        .back-btn { background: var(--border-color); border: none; border-radius: 8px; color: var(--text-main); padding: 8px 12px; cursor: pointer; margin-bottom: 15px; width: 100%; text-align: left; }
+        .back-btn:hover { background: var(--bg-dark); }
+
+        #chatArea { margin-left: 260px; height: 100vh; display: flex; flex-direction: column; background: var(--bg-dark); display: none; }
+        #chatArea.active { display: flex; }
+        .chat-header { padding: 20px; border-bottom: 1px solid var(--border-color); font-size: 18px; font-weight: bold; color: var(--text-main); }
+        .messages-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 12px; line-height: 1.6; word-wrap: break-word; font-size: 15px; }
+        .msg.user { background: var(--accent); align-self: flex-end; color: white; }
+        .msg.bot { background: var(--bg-card); align-self: flex-start; color: var(--text-main); border: 1px solid var(--border-color); }
+        .msg.bot strong { font-weight: bold; color: #ffffff; }
+        .msg.bot em { font-style: italic; color: #f0e6d0; }
+        .msg.bot code { background: #1e242c; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; font-size: 14px; color: #f0883e; }
+        .msg.bot pre { background: #161b22; padding: 12px; border-radius: 8px; overflow-x: auto; border: 1px solid var(--border-color); }
+        
+        .input-area { padding: 20px; border-top: 1px solid var(--border-color); display: flex; gap: 8px; align-items: center; background: var(--bg-dark); flex-wrap: wrap; }
+        .input-area .quick-buttons { display: flex; gap: 6px; margin-bottom: 8px; width: 100%; flex-wrap: wrap; }
+        .input-area .quick-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .input-area .quick-btn:hover { background: var(--border-color); color: var(--text-main); border-color: var(--accent); }
+        .input-area input[type="text"] { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-dark); color: var(--text-main); outline: none; min-width: 150px; }
+        .input-area input:focus { border-color: var(--accent); }
+        .input-area .icon-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+        .input-area .icon-btn:hover { background: var(--bg-card); color: var(--text-main); }
+        .input-area button.send-btn { background: var(--accent); color: white; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-weight: bold; height: 42px; }
+        .input-area button.send-btn:hover { background: var(--accent-hover); }
+        .drop-zone { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; font-size: 24px; color: white; z-index: 999; pointer-events: none; }
+        .drop-zone.active { display: flex; }
+        .file-preview { max-width: 300px; max-height: 200px; border-radius: 8px; margin-bottom: 6px; border: 2px solid var(--accent); }
+        .file-icon { font-size: 48px; margin-bottom: 6px; display: block; text-align: center; }
+        .file-name { font-size: 12px; color: var(--text-muted); margin-top: -4px; margin-bottom: 8px; display: block; }
+
+        .profile-menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 9998; }
+        .profile-menu-overlay.active { display: flex; }
+        .profile-card { background: var(--bg-card); padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); width: 90%; max-width: 420px; position: relative; }
+        .profile-card h2 { font-size: 24px; margin-bottom: 20px; text-align: center; color: var(--text-main); }
+        .profile-card .close-btn { position: absolute; top: 10px; right: 16px; cursor: pointer; font-size: 24px; color: var(--text-muted); }
+        .profile-card .tab-buttons { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .profile-card .tab-btn { flex: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; cursor: pointer; text-align: center; font-size: 14px; }
+        .profile-card .tab-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+        .profile-card .tab-content { display: none; }
+        .profile-card .tab-content.active { display: block; }
+        .profile-card .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-color); margin-bottom: 8px; }
+        .profile-card .info-label { color: var(--text-muted); }
+        .profile-card .info-value { font-weight: bold; color: var(--text-main); }
+        .profile-card .danger-btn { background: var(--danger); width: 100%; padding: 12px; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .profile-card .danger-btn:hover { background: var(--danger-hover); }
+        .profile-card .style-select { width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="drop-zone" id="dropZone">📂 Перетащи файл сюда</div>
+
+    <!-- ПРАВИЛА -->
+    <div class="rules-container" id="rulesPopup">
+        <div class="rules-card">
+            <h2>📜 Правила использования NiceAI</h2>
+            <ul>
+                <li>🚫 Запрещены мат, 18+, насилие, кровь.</li>
+                <li>🔒 Данные хранятся локально в твоём браузере.</li>
+                <li>🤖 ИИ — помощник, не принимает решения за тебя.</li>
+                <li>⚠️ ИИ может ошибаться. Всегда перепроверяй важные факты и код перед использованием.</li>
+            </ul>
+            <button onclick="closeRules()">Я принимаю правила ✅</button>
+        </div>
+    </div>
+
+    <!-- РЕГИСТРАЦИЯ -->
+    <div id="registerScreen" class="auth-container active">
+        <h1>🧠 Регистрация</h1>
+        <p>Создай аккаунт в NiceAI</p>
+        <div id="regError" class="error-msg">Ошибка</div>
+        <input type="text" id="regNick" class="input-field" placeholder="Придумай ник...">
+        <input type="email" id="regEmail" class="input-field" placeholder="Введи почту">
+        <input type="password" id="regPass" class="input-field" placeholder="Пароль (от 8 символов)">
+        <div class="captcha-box">
+            <span id="captchaQuestion">5 + 3 = ?</span>
+            <input type="text" id="captchaInput" placeholder="Ответ">
+        </div>
+        <button class="auth-btn" onclick="startRegister()">Зарегистрироваться</button>
+        <span class="switch-link" onclick="showLogin()">Уже есть аккаунт? Войти</span>
+        <div class="terms-agree" style="font-size:12px; color:var(--text-muted); margin-top:15px;">Пользуясь сервисом, ты соглашаешься с <span onclick="openRules()" style="color:var(--accent); cursor:pointer;">правилами</span></div>
+    </div>
+    <div id="regCodeScreen" class="auth-container">
+        <h1>📧 Подтверждение</h1>
+        <p>Введи код, который появился на экране</p>
+        <div id="regCodeError" class="error-msg">Неверный код</div>
+        <div style="font-size: 32px; font-weight: bold; color: var(--accent); margin: 10px 0; letter-spacing: 8px;" id="regGeneratedCode">000000</div>
+        <input type="text" id="regCodeInput" class="input-field" placeholder="Введи 6-значный код...">
+        <button class="auth-btn" onclick="verifyRegister()">Подтвердить</button>
+    </div>
+
+    <!-- ВХОД -->
+    <div id="loginScreen" class="auth-container">
+        <h1>🧠 Вход</h1>
+        <p>Войди в свой аккаунт</p>
+        <div id="loginError" class="error-msg">Неверный логин или пароль</div>
+        <input type="email" id="loginEmail" class="input-field" placeholder="Твоя почта...">
+        <input type="password" id="loginPass" class="input-field" placeholder="Пароль...">
+        <div class="captcha-box">
+            <span id="loginCaptchaQuestion">7 + 2 = ?</span>
+            <input type="text" id="loginCaptchaInput" placeholder="Ответ">
+        </div>
+        <button class="auth-btn" onclick="startLogin()">Войти</button>
+        <span class="switch-link" onclick="showRegister()">Нет аккаунта? Зарегистрироваться</span>
+        <span class="switch-link" onclick="showResetPassword()" style="font-size:12px; margin-top:4px;">🔑 Забыли пароль?</span>
+        <div class="terms-agree" style="font-size:12px; color:var(--text-muted); margin-top:15px;">Продолжая, ты соглашаешься с <span onclick="openRules()" style="color:var(--accent); cursor:pointer;">правилами</span></div>
+    </div>
+    <div id="loginCodeScreen" class="auth-container">
+        <h1>🔐 Подтверждение входа</h1>
+        <p>Введи код, который появился на экране</p>
+        <div id="loginCodeError" class="error-msg">Неверный код</div>
+        <div style="font-size: 32px; font-weight: bold; color: var(--accent); margin: 10px 0; letter-spacing: 8px;" id="loginGeneratedCode">000000</div>
+        <input type="text" id="loginCodeInput" class="input-field" placeholder="Введи 6-значный код...">
+        <button class="auth-btn" onclick="verifyLogin()">Войти</button>
+    </div>
+
+    <!-- ВОССТАНОВЛЕНИЕ ПАРОЛЯ -->
+    <div id="resetScreen" class="auth-container">
+        <h1>🔑 Восстановление</h1>
+        <p>Введи почту для сброса</p>
+        <div id="resetError" class="error-msg">Ошибка</div>
+        <input type="email" id="resetEmail" class="input-field" placeholder="Твоя почта...">
+        <button class="auth-btn" onclick="sendResetCode()">Получить код</button>
+        <span class="switch-link" onclick="showLogin()">Вернуться ко входу</span>
+    </div>
+    <div id="resetCodeScreen" class="auth-container">
+        <h1>📧 Код подтверждения</h1>
+        <p>Введи код, который появился на экране</p>
+        <div id="resetCodeError" class="error-msg">Неверный код</div>
+        <div style="font-size: 32px; font-weight: bold; color: var(--accent); margin: 10px 0; letter-spacing: 8px;" id="resetGeneratedCode">000000</div>
+        <input type="text" id="resetCodeInput" class="input-field" placeholder="Введи 6-значный код...">
+        <button class="auth-btn" onclick="verifyResetCode()">Подтвердить</button>
+        <span class="switch-link" onclick="showResetPassword()">Вернуться назад</span>
+    </div>
+    <div id="newPassScreen" class="auth-container">
+        <h1>🔐 Новый пароль</h1>
+        <p>Придумай новый пароль</p>
+        <div id="newPassError" class="error-msg">Ошибка</div>
+        <input type="password" id="newPassReset" class="input-field" placeholder="Новый пароль...">
+        <input type="password" id="newPassConfirm" class="input-field" placeholder="Повтори новый пароль...">
+        <button class="auth-btn" onclick="setNewPassword()">Сохранить</button>
+        <span class="switch-link" onclick="showResetPassword()">Вернуться назад</span>
+    </div>
+
+    <!-- ГЛАВНОЕ МЕНЮ -->
+    <div id="mainMenu">
+        <h1>🧠 Добро пожаловать в NiceAI!</h1>
+        <p>Выбери свой режим работы</p>
+        <div class="menu-grid">
+            <div class="menu-card" onclick="startCodex()">
+                <span>💻</span>
+                <h2>Codex</h2>
+                <p>Профессиональный режим программиста. Идеальный код для Roblox, Minecraft без ошибок.</p>
+            </div>
+            <div class="menu-card" onclick="startGPT()">
+                <span>🧠</span>
+                <h2>GPT-Чат</h2>
+                <p>Обычное общение. Эрудит, помощь в жизни, знания, дружеские разговоры.</p>
+            </div>
+            <div class="menu-card" onclick="openProfile()">
+                <span>👤</span>
+                <h2>Мой профиль</h2>
+                <p>Изменить данные, аватарку, увлечения, стиль, цвет, пароль, удалить аккаунт или выйти.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- САЙДБАР И ЧАТ -->
+    <div id="sidebar">
+        <div class="back-btn" onclick="goToMenu()">← Вернуться в меню</div>
+        <div class="header">
+            <h2 id="chatTitle" onclick="toggleModeMenu()">🧠 GPT ▼</h2>
+            <button onclick="newChat()">+ Новый</button>
+        </div>
+        
+        <!-- МЕНЮ РЕЖИМОВ (с кнопкой закрытия, описаниями и Глубоким мышлением) -->
+        <div id="modeMenuOverlay" style="display:none; position:absolute; top:55px; left:10px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; padding:6px; z-index:999; width:240px; box-shadow:0 4px 12px rgba(0,0,0,0.5); flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:6px; margin-bottom:4px;">
+                <span style="font-size:14px; color:var(--text-muted); padding-left:4px;">Режимы ИИ</span>
+                <span onclick="closeModeMenu()" style="cursor:pointer; font-size:18px; color:var(--text-muted); padding-right:4px;">✕</span>
+            </div>
+            
+            <div onclick="selectAIMode('fast')" style="padding:8px; cursor:pointer; border-radius:4px; color:var(--text-muted); display:flex; flex-direction:column; gap:2px;">
+                <div style="font-weight:bold; color:var(--text-main);">⚡ Быстрый</div>
+                <div style="font-size:11px; color:var(--text-muted);">Мгновенные ответы</div>
+            </div>
+
+            <div onclick="selectAIMode('expert')" style="padding:8px; cursor:pointer; border-radius:4px; color:var(--text-muted); display:flex; flex-direction:column; gap:2px;">
+                <div style="font-weight:bold; color:var(--text-main);">🧠 Эксперт</div>
+                <div style="font-size:11px; color:var(--text-muted);">Глубокие и детальные ответы</div>
+            </div>
+
+            <div onclick="selectAIMode('vision')" style="padding:8px; cursor:pointer; border-radius:4px; color:var(--text-muted); display:flex; flex-direction:column; gap:2px;">
+                <div style="font-weight:bold; color:var(--text-main);">👁️ Распознавание</div>
+                <div style="font-size:11px; color:var(--text-muted);">Анализ картинок и деталей</div>
+            </div>
+
+            <div onclick="selectAIMode('deep')" style="padding:8px; cursor:pointer; border-radius:4px; color:var(--text-muted); display:flex; flex-direction:column; gap:2px;">
+                <div style="display:flex; align-items:center; gap:6px; font-weight:bold; color:var(--text-main);">⚛️ Глубокое мышление</div>
+                <div style="font-size:11px; color:var(--text-muted);">Сначала размышляет, потом отвечает</div>
+            </div>
+        </div>
+
+        <div class="mode-switch">
+            <button id="modeCodex" onclick="switchMode('codex')">💻 Codex</button>
+            <button id="modeGPT" class="active" onclick="switchMode('gpt')">🧠 GPT</button>
+        </div>
+        <div id="historyList"></div>
+        <div class="profile-box" onclick="openProfile()">
+            <div class="avatar" id="avatarLetter">🧠</div>
+            <div><div class="profile-name" id="userName">Гость</div></div>
+        </div>
+    </div>
+
+    <div id="chatArea" class="active">
+        <div class="chat-header" id="chatHeader">GPT (Общение)</div>
+        <div class="messages-area" id="messagesArea"></div>
+        <div class="input-area">
+            <div class="quick-buttons">
+                <button class="quick-btn" onclick="quickAction('Расскажи смешную шутку')">😂 Шутка</button>
+                <button class="quick-btn" onclick="quickAction('Расскажи интересный факт о мире')">🌍 Факт</button>
+                <button class="quick-btn" onclick="quickAction('Дай мне случайную идею для вдохновения')">🎲 Случайный запрос</button>
+                <button class="quick-btn" onclick="toggleExpertMode()">🧠 Эксперт</button>
+            </div>
+            <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📎</button>
+            <input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(event)">
+            <input type="text" id="userInput" placeholder="Напиши сообщение..." onkeypress="handleEnter(event)">
+            <button class="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <!-- ПРОФИЛЬ -->
+    <div id="profileMenu" class="profile-menu-overlay">
+        <div class="profile-card">
+            <div class="close-btn" onclick="closeProfile()">✕</div>
+            <h2>👤 Мой профиль</h2>
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab('data')">Данные</button>
+                <button class="tab-btn" onclick="switchTab('style')">Стиль</button>
+                <button class="tab-btn" onclick="switchTab('theme')">Оформление</button>
+                <button class="tab-btn" onclick="switchTab('pass')">Пароль</button>
+                <button class="tab-btn" onclick="switchTab('exit')">Выход</button>
+                <button class="tab-btn" onclick="switchTab('delete')">Удалить аккаунт</button>
+            </div>
+            <div id="tabData" class="tab-content active">
+                <div class="info-row"><span class="info-label">Никнейм</span><span class="info-value" id="profNick">-</span></div>
+                <div class="info-row"><span class="info-label">Почта</span><span class="info-value" id="profEmail">-</span></div>
+                <div class="info-row"><span class="info-label">Иконка</span>
+                    <select id="profIcon" onchange="updateAvatar()" style="background:var(--bg-dark); border:1px solid var(--border-color); color:var(--text-main); padding:4px; border-radius:6px;">
+                        <option value="🧠">🧠</option>
+                        <option value="😎">😎</option>
+                        <option value="🐱">🐱</option>
+                        <option value="🚀">🚀</option>
+                        <option value="👾">👾</option>
+                        <option value="🦊">🦊</option>
+                        <option value="🐉">🐉</option>
+                        <option value="🤖">🤖</option>
+                        <option value="👽">👽</option>
+                        <option value="🎮">🎮</option>
+                        <option value="🎯">🎯</option>
+                        <option value="🎸">🎸</option>
+                        <option value="🎧">🎧</option>
+                        <option value="🏆">🏆</option>
+                        <option value="🦁">🦁</option>
+                        <option value="🐺">🐺</option>
+                        <option value="🐸">🐸</option>
+                        <option value="🐧">🐧</option>
+                        <option value="🐣">🐣</option>
+                        <option value="🐙">🐙</option>
+                    </select>
+                </div>
+                <div class="info-row"><span class="info-label">Мои увлечения</span></div>
+                <input type="text" id="profHobbies" class="input-field" placeholder="Например: Roblox, программирование, спорт..." style="margin-bottom:5px;">
+                <button class="auth-btn" style="margin-top:5px; background:var(--border-color);" onclick="saveHobbies()">Сохранить увлечения</button>
+                <button class="auth-btn" style="margin-top:10px; background:var(--accent);" onclick="closeProfile()">Закрыть</button>
+                <div style="margin-top:12px; border-top:1px solid var(--border-color); padding-top:12px;">
+                    <button class="auth-btn" style="margin-top:5px; background:var(--bg-dark); border:1px solid var(--border-color);" onclick="changeNick()">✏️ Сменить ник</button>
+                    <button class="auth-btn" style="margin-top:5px; background:var(--bg-dark); border:1px solid var(--border-color);" onclick="changeEmail()">📧 Сменить почту</button>
+                </div>
+            </div>
+            <div id="tabStyle" class="tab-content">
+                <p style="color:var(--text-muted); margin-bottom:10px;">Выбери стиль общения ИИ</p>
+                <select id="styleSelect" class="style-select">
+                    <option value="friendly">Дружелюбный (по умолчанию)</option>
+                    <option value="expert">Строгий эксперт</option>
+                    <option value="funny">Юмористический</option>
+                </select>
+                <button class="auth-btn" style="margin-top:15px; background:var(--accent);" onclick="saveStyle()">Сохранить стиль</button>
+            </div>
+            <div id="tabTheme" class="tab-content">
+                <p style="color:var(--text-muted); margin-bottom:10px;">Выбери цветовую тему</p>
+                <select id="themeSelect" class="style-select">
+                    <option value="dark">🌙 Тёмная (по умолчанию)</option>
+                    <option value="rainbow">🌈 Радужная</option>
+                    <option value="blue">💙 Синяя</option>
+                    <option value="red">❤️ Красная</option>
+                    <option value="green">💚 Зелёная</option>
+                    <option value="pink">💗 Розовая</option>
+                    <option value="lightblue">🩵 Голубая</option>
+                    <option value="purple">💜 Фиолетовая</option>
+                    <option value="gray">🩶 Серый</option>
+                    <option value="white">⚪ Белый</option>
+                    <option value="brown">🟤 Коричневый</option>
+                    <option value="yellow">💛 Жёлтый</option>
+                </select>
+                <button class="auth-btn" style="margin-top:15px; background:var(--accent);" onclick="saveTheme()">Применить тему</button>
+            </div>
+            <div id="tabPass" class="tab-content">
+                <input type="password" id="oldPassInput" class="input-field" placeholder="Старый пароль">
+                <input type="password" id="newPassInput" class="input-field" placeholder="Новый пароль">
+                <button class="auth-btn" onclick="changePassword()">Сохранить пароль</button>
+            </div>
+            <div id="tabExit" class="tab-content">
+                <p style="color:var(--text-muted); margin-bottom:20px;">Ты уверен, что хочешь выйти?</p>
+                <button class="danger-btn" onclick="performLogout()">Да, выйти</button>
+                <button class="auth-btn" style="background:var(--border-color); margin-top:10px;" onclick="closeProfile()">Отмена</button>
+            </div>
+            <div id="tabDelete" class="tab-content">
+                <p style="color:#f85149; margin-bottom:20px; font-weight:bold;">⚠️ Это действие безвозвратно! Все чаты и данные удалятся навсегда.</p>
+                <button class="danger-btn" onclick="performDelete()">ДА, УДАЛИТЬ НАВСЕГДА</button>
+                <button class="auth-btn" style="background:var(--border-color); margin-top:10px;" onclick="closeProfile()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- БАЗА ДАННЫХ ---
+        let usersDB = JSON.parse(localStorage.getItem('niceai_users')) || {};
+        let currentUser = null;
+        let pendingUser = null;
+        let generatedCode = "";
+        let currentMode = 'gpt';
+        let currentAIMode = 'fast'; // fast, expert, vision, deep
+        let chatHistory = [];
+        let currentChatId = null;
+        let currentFileBase64 = null;
+        let currentFileName = "";
+        let currentFileType = "";
+        let isExpertMode = false;
+        let isGenerating = false; // Флаг для кнопки Стоп
+        let abortController = null; // Контроллер для остановки
+        const LM_URL = 'http://127.0.0.1:1234/v1/chat/completions';
+
+        const bannedWords = ["хуй", "пизда", "бля", "сука", "cock", "fuck", "shit", "porn", "xxx", "18+", "кровь", "blood", "gore", "death", "смерть", "убийство", "насилие", "самоубийство", "sex", "секс", "порно"];
+
+        function isContentBanned(text, fileName) {
+            let contentToCheck = (text + " " + (fileName || "")).toLowerCase();
+            for (let word of bannedWords) if (contentToCheck.includes(word)) return true;
+            return false;
+        }
+
+        function openRules() { document.getElementById('rulesPopup').classList.add('active'); }
+        function closeRules() { document.getElementById('rulesPopup').classList.remove('active'); }
+        function generateCaptcha(questionId) {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            document.getElementById(questionId).innerText = `${num1} + ${num2} = ?`;
+            return num1 + num2;
+        }
+
+        function showRegister() { document.querySelectorAll('.auth-container').forEach(el => el.classList.remove('active')); document.getElementById('registerScreen').classList.add('active'); }
+        function showLogin() { document.querySelectorAll('.auth-container').forEach(el => el.classList.remove('active')); document.getElementById('loginScreen').classList.add('active'); }
+
+        function validateEmail(email) { return email.includes('@') && email.indexOf('.') > email.indexOf('@'); }
+        function validatePassword(pass) {
+            if (pass.length < 8) return false;
+            const weak = ['00000000', '1234567890', 'абвгдежыааыа', 'abcdefiaf', 'qwertyuiop', 'password', '12345678'];
+            if (weak.includes(pass)) return false;
+            return true;
+        }
+
+        function startRegister() {
+            const nick = document.getElementById('regNick').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const pass = document.getElementById('regPass').value.trim();
+            const err = document.getElementById('regError');
+            const captchaInput = document.getElementById('captchaInput').value.trim();
+            const questionText = document.getElementById('captchaQuestion').innerText;
+            const nums = questionText.match(/\d+/g);
+            const correctAnswer = parseInt(nums[0]) + parseInt(nums[1]);
+            if (parseInt(captchaInput) !== correctAnswer) {
+                err.innerText = "Неверный ответ на капчу!"; err.style.display = 'block';
+                generateCaptcha('captchaQuestion'); document.getElementById('captchaInput').value = ''; return;
+            }
+            if (!nick || !email || !pass) { err.innerText = "Заполни все поля!"; err.style.display = 'block'; return; }
+            if (!validateEmail(email)) { err.innerText = "Введи настоящую почту!"; err.style.display = 'block'; return; }
+            if (!validatePassword(pass)) { err.innerText = "Пароль слишком лёгкий!"; err.style.display = 'block'; return; }
+            if (usersDB[email]) { err.innerText = "Эта почта уже зарегистрирована!"; err.style.display = 'block'; return; }
+            pendingUser = { nick, email, pass };
+            generatedCode = String(Math.floor(100000 + Math.random() * 900000));
+            document.getElementById('regGeneratedCode').innerText = generatedCode;
+            document.querySelectorAll('.auth-container').forEach(el => el.classList.remove('active'));
+            document.getElementById('regCodeScreen').classList.add('active');
+        }
+
+        function verifyRegister() {
+            if (document.getElementById('regCodeInput').value.trim() === generatedCode && pendingUser) {
+                usersDB[pendingUser.email] = { nick: pendingUser.nick, pass: pendingUser.pass, icon: '🧠', hobbies: '', style: 'friendly', theme: 'dark' };
+                localStorage.setItem('niceai_users', JSON.stringify(usersDB));
+                currentUser = { name: pendingUser.nick, email: pendingUser.email };
+                enterApp();
+            } else { document.getElementById('regCodeError').style.display = 'block'; }
+        }
+
+        function startLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            const err = document.getElementById('loginError');
+            const captchaInput = document.getElementById('loginCaptchaInput').value.trim();
+            const questionText = document.getElementById('loginCaptchaQuestion').innerText;
+            const nums = questionText.match(/\d+/g);
+            const correctAnswer = parseInt(nums[0]) + parseInt(nums[1]);
+            if (parseInt(captchaInput) !== correctAnswer) {
+                err.innerText = "Неверный ответ на капчу!"; err.style.display = 'block';
+                generateCaptcha('loginCaptchaQuestion'); document.getElementById('loginCaptchaInput').value = ''; return;
+            }
+            if (!usersDB[email] || usersDB[email].pass !== pass) { err.innerText = "Неверная почта или пароль!"; err.style.display = 'block'; return; }
+            pendingUser = { email };
+            generatedCode = String(Math.floor(100000 + Math.random() * 900000));
+            document.getElementById('loginGeneratedCode').innerText = generatedCode;
+            document.querySelectorAll('.auth-container').forEach(el => el.classList.remove('active'));
+            document.getElementById('loginCodeScreen').classList.add('active');
+        }
+
+        function verifyLogin() {
+            if (document.getElementById('loginCodeInput').value.trim() === generatedCode && pendingUser) {
+                currentUser = { name: usersDB[pendingUser.email].nick, email: pendingUser.email };
+                enterApp();
+            } else { document.getElementById('loginCodeError').style.display = 'block'; }
+        }
+
+        function showResetPassword() { document.querySelectorAll('.auth-container').forEach(el => el.classList.remove('active')); document.getElementById('resetScreen').classList.add('active'); }
+        function sendResetCode() {
+            const email = document.getElementById('resetEmail').value.trim();
+            const err = document.getElementById('resetError');
+            if (!email) { err.innerText = "Введи почту!"; err.style.display = 'block'; return; }
+            if (!usersDB[email]) { err.innerText = "Пользователь не найден!"; err.style.display = 'block'; return; }
+            pendingUser = { email };
+            generatedCode = String(Math.floor(100000 + Math.random() * 900000));
+            document.getElementById('resetGeneratedCode').innerText = generatedCode;
+            document.querySelectorAll('.auth-container').forEach(el => el.classList.remove('active'));
+            document.getElementById('resetCodeScreen').classList.add('active');
+        }
+        function verifyResetCode() {
+            if (document.getElementById('resetCodeInput').value.trim() === generatedCode && pendingUser) {
+                document.querySelectorAll('.auth-container').forEach(el => el.classList.remove('active'));
+                document.getElementById('newPassScreen').classList.add('active');
+            } else { document.getElementById('resetCodeError').style.display = 'block'; }
+        }
+        function setNewPassword() {
+            const newPass = document.getElementById('newPassReset').value.trim();
+            const confirmPass = document.getElementById('newPassConfirm').value.trim();
+            const err = document.getElementById('newPassError');
+            if (newPass !== confirmPass) {
+                err.innerText = "Пароли не совпадают!"; err.style.display = 'block'; return;
+            }
+            if (!validatePassword(newPass)) { err.innerText = "Пароль слишком лёгкий!"; err.style.display = 'block'; return; }
+            usersDB[pendingUser.email].pass = newPass;
+            localStorage.setItem('niceai_users', JSON.stringify(usersDB));
+            alert("Пароль успешно изменен! Войди с новым паролем.");
+            document.querySelectorAll('.auth-container').forEach(el => el.classList.remove('active'));
+            document.getElementById('loginScreen').classList.add('active');
+        }
+
+        function enterApp() {
+            document.querySelectorAll('.auth-container').forEach(el => el.classList.remove('active'));
+            document.getElementById('mainMenu').classList.add('active');
+            document.getElementById('userName').innerText = currentUser.name;
+            document.getElementById('avatarLetter').innerText = usersDB[currentUser.email].icon || '🧠';
+            localStorage.setItem('niceai_current', JSON.stringify(currentUser));
+            closeProfile();
+        }
+
+        function goToMenu() {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('chatArea').classList.remove('active');
+            document.getElementById('mainMenu').classList.add('active');
+            document.getElementById('profileMenu').classList.remove('active');
+        }
+
+        function startCodex() {
+            currentMode = 'codex';
+            document.getElementById('mainMenu').classList.remove('active');
+            document.getElementById('sidebar').classList.add('active');
+            document.getElementById('chatArea').classList.add('active');
+            document.getElementById('chatTitle').innerText = '💻 Codex';
+            document.getElementById('chatHeader').innerText = 'Codex (Профессиональный код)';
+            document.getElementById('modeCodex').classList.add('active');
+            document.getElementById('modeGPT').classList.remove('active');
+            const saved = localStorage.getItem('niceai_chats_codex_' + currentUser.email);
+            if (saved) chatHistory = JSON.parse(saved); else chatHistory = [];
+            if (chatHistory.length === 0) newChat(); else switchChat(chatHistory[0].id);
+        }
+
+        function startGPT() {
+            currentMode = 'gpt';
+            document.getElementById('mainMenu').classList.remove('active');
+            document.getElementById('sidebar').classList.add('active');
+            document.getElementById('chatArea').classList.add('active');
+            document.getElementById('chatTitle').innerText = '🧠 GPT';
+            document.getElementById('chatHeader').innerText = 'GPT (Общение)';
+            document.getElementById('modeGPT').classList.add('active');
+            document.getElementById('modeCodex').classList.remove('active');
+            const saved = localStorage.getItem('niceai_chats_gpt_' + currentUser.email);
+            if (saved) chatHistory = JSON.parse(saved); else chatHistory = [];
+            if (chatHistory.length === 0) newChat(); else switchChat(chatHistory[0].id);
+        }
+
+        function switchMode(mode) {
+            if (mode === 'codex') startCodex(); else startGPT();
+        }
+
+        function openProfile() {
+            if (!currentUser) return;
+            document.getElementById('profNick').innerText = currentUser.name;
+            document.getElementById('profEmail').innerText = currentUser.email;
+            document.getElementById('profIcon').value = usersDB[currentUser.email].icon || '🧠';
+            document.getElementById('profHobbies').value = usersDB[currentUser.email].hobbies || '';
+            document.getElementById('styleSelect').value = usersDB[currentUser.email].style || 'friendly';
+            document.getElementById('themeSelect').value = usersDB[currentUser.email].theme || 'dark';
+            document.getElementById('profileMenu').classList.add('active');
+        }
+        function closeProfile() { document.getElementById('profileMenu').classList.remove('active'); }
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+            document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
+        }
+
+        function updateAvatar() {
+            const icon = document.getElementById('profIcon').value;
+            document.getElementById('avatarLetter').innerText = icon;
+            if (currentUser) {
+                usersDB[currentUser.email].icon = icon;
+                localStorage.setItem('niceai_users', JSON.stringify(usersDB));
+            }
+        }
+        function saveHobbies() {
+            if (!currentUser) return;
+            const hobbies = document.getElementById('profHobbies').value.trim();
+            usersDB[currentUser.email].hobbies = hobbies;
+            localStorage.setItem('niceai_users', JSON.stringify(usersDB));
+            alert("Увлечения сохранены! ИИ будет их помнить.");
+        }
+        function saveStyle() {
+            const style = document.getElementById('styleSelect').value;
+            if (!currentUser) return;
+            usersDB[currentUser.email].style = style;
+            localStorage.setItem('niceai_users', JSON.stringify(usersDB));
+            alert("Стиль общения сохранён!");
+        }
+        function saveTheme() {
+            const theme = document.getElementById('themeSelect').value;
+            if (!currentUser) return;
+            usersDB[currentUser.email].theme = theme;
+            document.body.className = 'theme-' + theme;
+            localStorage.setItem('niceai_users', JSON.stringify(usersDB));
+            alert("Цветовая тема применена!");
+        }
+        function toggleExpertMode() {
+            isExpertMode = !isExpertMode;
+            alert(isExpertMode ? "Режим эксперта включён!" : "Режим эксперта выключен!");
+        }
+
+        function quickAction(prompt) {
+            document.getElementById('userInput').value = prompt;
+            sendMessage();
+        }
+
+        function changeNick() {
+            const newNick = prompt("Введите новый никнейм:", currentUser.name);
+            if (newNick && newNick.trim().length > 0) {
+                usersDB[currentUser.email].nick = newNick.trim();
+                currentUser.name = newNick.trim();
+                localStorage.setItem('niceai_users', JSON.stringify(usersDB));
+                document.getElementById('userName').innerText = currentUser.name;
+                document.getElementById('profNick').innerText = currentUser.name;
+                document.getElementById('avatarLetter').innerText = usersDB[currentUser.email].icon || '🧠';
+                localStorage.setItem('niceai_current', JSON.stringify(currentUser));
+                alert("Никнейм успешно изменён!");
+            }
+        }
+        function changeEmail() {
+            const newEmail = prompt("Введите новую почту:", currentUser.email);
+            if (newEmail && validateEmail(newEmail.trim())) {
+                if (usersDB[newEmail.trim()]) {
+                    alert("Эта почта уже занята другим пользователем!");
+                    return;
+                }
+                const oldEmail = currentUser.email;
+                usersDB[newEmail.trim()] = { ...usersDB[oldEmail] };
+                delete usersDB[oldEmail];
+                currentUser.email = newEmail.trim();
+                localStorage.setItem('niceai_users', JSON.stringify(usersDB));
+                document.getElementById('profEmail').innerText = currentUser.email;
+                localStorage.setItem('niceai_current', JSON.stringify(currentUser));
+                const codexKeyOld = 'niceai_chats_codex_' + oldEmail;
+                const gptKeyOld = 'niceai_chats_gpt_' + oldEmail;
+                const codexData = localStorage.getItem(codexKeyOld);
+                const gptData = localStorage.getItem(gptKeyOld);
+                if (codexData) localStorage.setItem('niceai_chats_codex_' + currentUser.email, codexData);
+                if (gptData) localStorage.setItem('niceai_chats_gpt_' + currentUser.email, gptData);
+                localStorage.removeItem(codexKeyOld);
+                localStorage.removeItem(gptKeyOld);
+                alert("Почта успешно изменена! Войдите с новой почтой в следующий раз.");
+            } else if (newEmail) {
+                alert("Введите корректную почту (например, name@mail.com)!");
+            }
+        }
+
+        function toggleModeMenu() {
+            const menu = document.getElementById('modeMenuOverlay');
+            if (menu.style.display === 'none' || menu.style.display === '') {
+                menu.style.display = 'flex';
+            } else {
+                menu.style.display = 'none';
+            }
+        }
+
+        function closeModeMenu() {
+            document.getElementById('modeMenuOverlay').style.display = 'none';
+        }
+
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('modeMenuOverlay');
+            const title = document.getElementById('chatTitle');
+            if (menu.style.display === 'flex' && !menu.contains(event.target) && event.target !== title) {
+                menu.style.display = 'none';
+            }
+        });
+
+        function selectAIMode(mode) {
+            currentAIMode = mode;
+            document.getElementById('modeMenuOverlay').style.display = 'none';
+            document.querySelectorAll('#modeMenuOverlay div').forEach(el => el.style.color = 'var(--text-muted)');
+            const selected = document.querySelector(`#modeMenuOverlay div[onclick*="${mode}"]`);
+            if (selected) selected.style.color = 'var(--accent)';
+
+            let msg = '';
+            if (mode === 'fast') msg = '⚡ Переключено на Быстрый режим.';
+            else if (mode === 'expert') msg = '🧠 Переключено на Эксперт. Будет дольше, но умнее.';
+            else if (mode === 'vision') msg = '👁️ Переключено на Распознавание. Анализирую картинки.';
+            else if (mode === 'deep') msg = '⚛️ Переключено на Глубокое мышление. Сначала подумаю, потом отвечу.';
+            const area = document.getElementById('messagesArea');
+            const notif = document.createElement('div');
+            notif.className = 'msg bot';
+            notif.innerText = msg;
+            area.appendChild(notif);
+            area.scrollTop = area.scrollHeight;
+        }
+
+        function getSystemPrompt() {
+            if (!currentUser) return "Ты — весёлый эрудит NiceAI.";
+            const user = usersDB[currentUser.email];
+            let prompt = "Ты — самый добрый, весёлый, заботливый, обаятельный и невероятно умный друг по имени NiceAI. Ты всегда говоришь с огромным количеством эмодзи (🤗🌟✨🚀💖🎉🔥🥰😊💪💯). Ты никогда не отвечаешь сухо или как робот. Ты всегда поддерживаешь пользователя и делаешь его день лучше. Ты всегда начинаешь диалог с вопроса 'Привет! Как твои дела? Как настроение сегодня? 😊'. Ты отвечаешь на вопрос 'как дела?' очень тепло и весело. Ты не просто помощник, ты — лучший друг, который всегда рад поболтать.";
+            if (user.style === 'expert') prompt += " Ты говоришь строго, профессионально, без эмоций, как учёный.";
+            else if (user.style === 'funny') prompt += " Ты говоришь с юмором, часто шутишь и используешь иронию.";
+            if (user.hobbies) prompt += ` Пользователь увлекается: ${user.hobbies}. Учитывай это в ответах.`;
+            if (isExpertMode) prompt += " Также сейчас включён режим строгого эксперта.";
+            
+            if (currentAIMode === 'fast') prompt += " Ты отвечаешь максимально быстро, кратко и по делу. Не пиши длинные ответы.";
+            else if (currentAIMode === 'expert') prompt += " Ты отвечаешь очень глубоко, как настоящий эксперт, развёрнуто и с деталями. Не торопись, дай лучший ответ.";
+            else if (currentAIMode === 'vision') prompt += " Ты максимально точно анализируешь изображения. Будь невероятно внимателен к мельчайшим деталям.";
+            else if (currentAIMode === 'deep') prompt += " Ты используешь режим глубокого мышления. Сначала ты пишешь свой внутренний размышления (монолог) в квадратных скобках [Размышление: ...], а затем, после паузы, выдаёшь свой окончательный тёплый и добрый ответ. Не торопись, сначала хорошо подумай, потом ответь.";
+            return prompt;
+        }
+
+        function newChat() {
+            const id = Date.now().toString();
+            const modeKey = currentMode === 'codex' ? 'codex' : 'gpt';
+            let sysPrompt;
+            if (currentMode === 'codex') {
+                sysPrompt = {
+                    role: "system",
+                    content: `Ты — сверх-профессиональный разработчик игр и плагинов. 
+                    
+Ты — эксперт мирового уровня по Minecraft серверам. Ты идеально знаешь абсолютно все плагины, включая Skript, SkBee и MyCommand.
+
+Твои знания включают:
+- Права и группы: LuckPerms.
+- Базовые команды: EssentialsX.
+- Экономика: Vault, ShopGUIPlus, ChestShop, EasyDonate, AuctionHouse.
+- Защита: GrimAC, Vulcan, AuthMe, GriefPrevention, AntiBot.
+- Мир: WorldGuard, WorldEdit, FAWE.
+- Мини-игры: BedWars1058, SkyWarsReloaded, BattleArena.
+- RPG: Aurelium Skills, MythicMobs, ItemsAdder.
+- Интеграция: DiscordSRV, Dynmap, ViaVersion, PlaceholderAPI.
+- Скрипты и команды: Skript, SkBee, MyCommand.
+
+Ты знаешь, какие плагины платные, а какие бесплатные. Ты сначала анализируешь контекст, потом пишешь код. Ты даёшь только рабочий код. Ты стараешься сделать так, чтобы в коде было максимум 1-2 ошибки (идеально 0 ошибок).`
+                };
+            } else {
+                sysPrompt = {
+                    role: "system",
+                    content: getSystemPrompt() + " Ты также знаешь все абсолютно все мемы 2025 и 2026 года, тренды ТикТока, YouTube и интернета. Ты знаешь всё о динозаврах, космосе, животных, кулинарии, истории, технологиях, автомобилях, самолетах, странах, городах, природе, погоде. Ты — энциклопедия. Ты всегда поддерживаешь пользователя. Ты — самый добрый и весёлый ИИ на свете."
+                };
+            }
+            chatHistory.unshift({ id, title: 'Новый диалог', messages: [sysPrompt], pinned: false });
+            currentChatId = id;
+            saveChats(); renderHistory(); renderMessages();
+            document.getElementById('chatHeader').innerText = currentMode === 'codex' ? 'Codex (Код)' : 'GPT (Общение)';
+        }
+
+        function switchChat(id) {
+            currentChatId = id;
+            renderHistory(); renderMessages();
+            const chat = chatHistory.find(c => c.id === id);
+            document.getElementById('chatHeader').innerText = chat.title || 'Чат';
+        }
+
+        function saveChats() { if (!currentUser) return; const key = currentMode === 'codex' ? 'codex' : 'gpt'; localStorage.setItem('niceai_chats_' + key + '_' + currentUser.email, JSON.stringify(chatHistory)); }
+        
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            const sorted = [...chatHistory].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+            list.innerHTML = sorted.map(c => `
+                <div class="h-item-wrapper ${c.id === currentChatId ? 'active' : ''} ${c.pinned ? 'pinned' : ''}">
+                    <div class="h-item" onclick="switchChat('${c.id}')">${c.title}</div>
+                    <div class="h-item-menu" onclick="toggleMenu('${c.id}', event)">⋮</div>
+                    <div class="dropdown-menu" id="menu-${c.id}">
+                        <div onclick="renameChat('${c.id}')">✏️ Переименовать</div>
+                        ${c.pinned ? `<div onclick="unpinChat('${c.id}')">📌 Открепить</div>` : `<div onclick="pinChat('${c.id}')">📌 Закрепить сверху</div>`}
+                        <div onclick="shareChat('${c.id}')">📤 Поделиться</div>
+                        <div class="danger" onclick="deleteChat('${c.id}')">🗑️ Удалить диалог</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleMenu(id, event) {
+            event.stopPropagation();
+            document.querySelectorAll('.dropdown-menu').forEach(el => {
+                if (el.id !== 'menu-' + id) el.classList.remove('open');
+            });
+            const menu = document.getElementById('menu-' + id);
+            menu.classList.toggle('open');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown-menu') && !e.target.closest('.h-item-menu')) {
+                document.querySelectorAll('.dropdown-menu').forEach(el => el.classList.remove('open'));
+            }
+        });
+
+        function pinChat(id) {
+            const chat = chatHistory.find(c => c.id === id);
+            if (chat) { chat.pinned = true; saveChats(); renderHistory(); }
+        }
+        function unpinChat(id) {
+            const chat = chatHistory.find(c => c.id === id);
+            if (chat) { chat.pinned = false; saveChats(); renderHistory(); }
+        }
+        function renameChat(id) {
+            const chat = chatHistory.find(c => c.id === id);
+            if (!chat) return;
+            const newName = prompt("Введите новое название диалога:", chat.title);
+            if (newName && newName.trim().length > 0) {
+                chat.title = newName.trim();
+                saveChats(); renderHistory();
+                document.getElementById('chatHeader').innerText = chat.title;
+            }
+        }
+        function shareChat(id) {
+            const chat = chatHistory.find(c => c.id === id);
+            if (!chat) return;
+            const text = chat.messages.filter(m => m.role !== 'system').map(m => 
+                `${m.role === 'user' ? 'Вы' : 'NiceAI'}: ${m.content}`
+            ).join('\n\n');
+            navigator.clipboard.writeText(text).then(() => alert("Диалог скопирован в буфер обмена! Можешь отправить его другу."));
+        }
+        function deleteChat(id) {
+            if (confirm("Ты уверен, что хочешь удалить этот диалог?")) {
+                chatHistory = chatHistory.filter(c => c.id !== id);
+                if (currentChatId === id) {
+                    currentChatId = chatHistory.length > 0 ? chatHistory[0].id : null;
+                    if (currentChatId) switchChat(currentChatId);
+                    else { chatHistory = []; newChat(); }
+                }
+                saveChats(); renderHistory();
+            }
+        }
+
+        function renderMessages() {
+            const area = document.getElementById('messagesArea');
+            const chat = chatHistory.find(c => c.id === currentChatId);
+            if (!chat || chat.messages.length <= 1) {
+                const greeting = currentMode === 'codex' ? '💻 Готов к программированию!' : '🧠 Привет! Спрашивай что угодно!';
+                area.innerHTML = `<div class="msg bot">${greeting}</div>`;
+                return;
+            }
+            area.innerHTML = chat.messages.filter(m => m.role !== 'system').map(m => {
+                let content = m.content.replace(/\n/g, '<br>');
+                content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                content = content.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+                content = content.replace(/`([^`]+)`/g, '<code>$1</code>');
+                return `<div class="msg ${m.role === 'user' ? 'user' : 'bot'}">${content}</div>`;
+            }).join('');
+            area.scrollTop = area.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const area = document.getElementById('messagesArea');
+            const text = input.value.trim();
+            if (!text && !currentFileBase64) return;
+
+            if (isContentBanned(text, currentFileName)) {
+                alert("❗ Обнаружены запрещенные слова (мат, 18+, насилие). Сообщение заблокировано!");
+                return;
+            }
+
+            // Если уже генерируется ответ, нажатие на кнопку останавливает его
+            if (isGenerating) {
+                if (abortController) {
+                    abortController.abort();
+                }
+                isGenerating = false;
+                const btn = document.querySelector('.send-btn');
+                btn.innerText = '➤';
+                btn.style.width = '42px';
+                btn.style.background = 'var(--accent)';
+                return;
+            }
+
+            const chat = chatHistory.find(c => c.id === currentChatId);
+            let userMessage = { role: "user", content: [{ type: "text", text: text || "Проанализируй файл." }] };
+            if (currentFileBase64 && currentFileType?.startsWith('image/')) {
+                userMessage.content.push({ type: "image_url", image_url: { url: currentFileBase64 } });
+            } else if (currentFileBase64) {
+                userMessage.content[0].text += `\n\n[Файл: ${currentFileName}]`;
+            }
+
+            chat.messages.push({ role: "user", content: text || `[Файл: ${currentFileName}]` });
+            if (chat.messages.length === 2) {
+                chat.title = text.length > 25 ? text.substring(0, 25) + '...' : (text || 'Файл');
+                document.getElementById('chatHeader').innerText = chat.title;
+                saveChats(); renderHistory();
+            }
+
+            input.value = ''; currentFileBase64 = null; currentFileName = "";
+            renderMessages();
+
+            const loading = document.createElement('div');
+            loading.className = 'msg bot';
+            loading.innerHTML = '<em>Думаю... 🤔</em>';
+            area.appendChild(loading);
+
+            // --- Меняем кнопку на красивую красную «Стоп» ---
+            isGenerating = true;
+            const sendBtn = document.querySelector('.send-btn');
+            sendBtn.innerText = '⏹ Стоп';
+            sendBtn.style.background = 'var(--danger)';
+            sendBtn.style.width = 'auto';
+            sendBtn.style.padding = '0 20px';
+
+            abortController = new AbortController();
+
+            try {
+                // --- ФИЛЬТР ПАМЯТИ: ОСТАВЛЯЕМ ТОЛЬКО ПОСЛЕДНИЕ 5 СООБЩЕНИЙ ---
+                let messagesToSend = chat.messages;
+                if (messagesToSend.length > 5) {
+                    // Оставляем системный промт (индекс 0) и последние 5 сообщений
+                    const lastMessages = messagesToSend.slice(-5);
+                    messagesToSend = [messagesToSend[0], ...lastMessages];
+                }
+
+                const response = await fetch(LM_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    signal: abortController.signal,
+                    body: JSON.stringify({ 
+                        model: "qwen2.5-vl-7b-instruct", 
+                        messages: messagesToSend, 
+                        stream: true 
+                    })
+                });
+
+                if (!response.ok) throw new Error('Ошибка');
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                loading.innerHTML = '';
+                let fullContent = '';
+
+                // Читаем поток и выводим словами
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n');
+                    for (const line of lines) {
+                        if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+                            try {
+                                const json = JSON.parse(line.slice(6));
+                                const delta = json.choices[0]?.delta?.content;
+                                if (delta) {
+                                    fullContent += delta;
+                                    loading.innerHTML = fullContent;
+                                    area.scrollTop = area.scrollHeight;
+                                }
+                            } catch (e) {}
+                        }
+                    }
+                }
+
+                chat.messages.push({ role: "assistant", content: fullContent });
+                saveChats(); renderMessages();
+            } catch (e) {
+                if (e.name !== 'AbortError') {
+                    loading.innerHTML = 'Ошибка подключения к LM Studio. ' + e.message;
+                } else {
+                    loading.innerHTML = '⏹️ Генерация остановлена.';
+                }
+            } finally {
+                isGenerating = false;
+                sendBtn.innerText = '➤';
+                sendBtn.style.width = '42px';
+                sendBtn.style.background = 'var(--accent)';
+            }
+        }
+
+        function handleEnter(e) { if (e.key === 'Enter') sendMessage(); }
+        function handleFileUpload(event) { const file = event.target.files[0]; if (file) processFile(file); document.getElementById('fileInput').value = ''; }
+        function processFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentFileBase64 = e.target.result; currentFileName = file.name; currentFileType = file.type;
+                const area = document.getElementById('messagesArea');
+                const previewHtml = file.type.startsWith('image/') ? `<img src="${currentFileBase64}" class="file-preview" alt="Фото">` : `<div class="file-icon">📄</div><div class="file-name">${file.name}</div>`;
+                const div = document.createElement('div');
+                div.className = 'msg user'; div.style.padding = '0'; div.style.background = 'transparent';
+                div.innerHTML = previewHtml; area.appendChild(div); area.scrollTop = area.scrollHeight;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function changePassword() {
+            const oldPass = document.getElementById('oldPassInput').value.trim();
+            const newPass = document.getElementById('newPassInput').value.trim();
+            if (usersDB[currentUser.email].pass !== oldPass) { alert("Старый пароль неверен!"); return; }
+            if (!validatePassword(newPass)) { alert("Новый пароль слишком простой!"); return; }
+            usersDB[currentUser.email].pass = newPass;
+            localStorage.setItem('niceai_users', JSON.stringify(usersDB));
+            alert("Пароль успешно изменен!");
+            document.getElementById('oldPassInput').value = ''; document.getElementById('newPassInput').value = '';
+        }
+
+        function performLogout() {
+            if (confirm("Ты уверен, что хочешь выйти из аккаунта?")) {
+                localStorage.removeItem('niceai_current');
+                currentUser = null;
+                document.getElementById('sidebar').classList.remove('active');
+                document.getElementById('chatArea').classList.remove('active');
+                document.getElementById('mainMenu').classList.remove('active');
+                showLogin();
+            }
+        }
+
+        function performDelete() {
+            if (confirm("Ты уверен, что хочешь безвозвратно удалить аккаунт и все чаты?")) {
+                let email = currentUser.email;
+                delete usersDB[email];
+                localStorage.removeItem('niceai_users');
+                localStorage.removeItem('niceai_chats_codex_' + email);
+                localStorage.removeItem('niceai_chats_gpt_' + email);
+                localStorage.removeItem('niceai_current');
+                currentUser = null;
+                document.getElementById('sidebar').classList.remove('active');
+                document.getElementById('chatArea').classList.remove('active');
+                document.getElementById('mainMenu').classList.remove('active');
+                showRegister();
+                alert("Аккаунт и все данные безвозвратно удалены.");
+            }
+        }
+
+        window.onload = function() {
+            const savedUser = JSON.parse(localStorage.getItem('niceai_current'));
+            if (savedUser && usersDB[savedUser.email]) {
+                currentUser = savedUser;
+                document.body.className = 'theme-' + (usersDB[savedUser.email].theme || 'dark');
+                enterApp();
+            } else {
+                showRegister();
+            }
+            generateCaptcha('captchaQuestion');
+            generateCaptcha('loginCaptchaQuestion');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мега Портал · Все проекты</title>
+
+<!-- ИКОНКА ПОРТАЛА -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234ade80'/%3E%3Cstop offset='33%25' stop-color='%2300d4ff'/%3E%3Cstop offset='66%25' stop-color='%237b2ff7'/%3E%3Cstop offset='100%25' stop-color='%23f472b6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='0' y='0' width='512' height='512' rx='120' fill='url(%23g)'/%3E%3Ctext x='50%25' y='55%25' font-family='Arial,sans-serif' font-size='280' font-weight='900' fill='%23ffffff' text-anchor='middle' dominant-baseline='middle'%3EМП%3C/text%3E%3C/svg%3E">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    color: #fff; padding: 20px;
+    display: flex; justify-content: center; align-items: center;
+    overflow-x: hidden;
+  }
+  .container { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 30px; }
+  .header { text-align: center; padding: 20px; }
+  .header h1 {
+    font-size: 56px; font-weight: 900; letter-spacing: 4px;
+    background: linear-gradient(135deg, #4ade80, #00d4ff, #7b2ff7, #f472b6);
+    background-size: 300% 300%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    animation: gradientMove 6s ease infinite;
+    filter: drop-shadow(0 0 30px rgba(123,47,247,0.6));
+    line-height: 1;
+  }
+  @keyframes gradientMove {
+    0%,100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .header p {
+    color: #888; font-size: 14px; letter-spacing: 4px;
+    text-transform: uppercase; margin-top: 10px;
+  }
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 24px; padding: 30px;
+    cursor: pointer; transition: all 0.3s;
+    position: relative; overflow: hidden;
+    text-decoration: none; color: #fff;
+    display: flex; flex-direction: column; gap: 14px;
+    min-height: 220px;
+  }
+  .card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at top right, var(--glow) 0%, transparent 60%);
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  }
+  .card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--glow);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px var(--glow);
+  }
+  .card:hover::before { opacity: 0.25; }
+  .card-icon {
+    width: 60px; height: 60px; border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px; flex-shrink: 0;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  }
+  .card h2 { font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
+  .card p { font-size: 13px; color: #a0a0c0; line-height: 1.6; flex: 1; }
+  .card .tag {
+    position: absolute; top: 16px; right: 16px;
+    font-size: 10px; padding: 4px 12px; border-radius: 20px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 700; color: #c0c0e0;
+  }
+
+  .card.gdz { --glow: #4ade80; }
+  .card.gdz .card-icon { background: linear-gradient(135deg, #4ade80, #22c55e); }
+
+  .card.niceai { --glow: #238636; }
+  .card.niceai .card-icon { background: linear-gradient(135deg, #238636, #2ea043); }
+
+  .card.memai { --glow: #ff69b4; }
+  .card.memai .card-icon { background: linear-gradient(135deg, #ff69b4, #7b2ff7); font-weight: 900; }
+
+  .card.vladus { --glow: #c9a84c; }
+  .card.vladus .card-icon { background: linear-gradient(135deg, #c9a84c, #8a6d2b); }
+
+  .card.games { --glow: #f472b6; }
+  .card.games .card-icon { background: linear-gradient(135deg, #f472b6, #7c3aed); }
+
+  .card.messenger { --glow: #3b82f6; }
+  .card.messenger .card-icon { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+
+  .card.modgen { --glow: #00d4ff; }
+  .card.modgen .card-icon { background: linear-gradient(135deg, #00d4ff, #7b2ff7); }
+
+  .card.tools { --glow: #fbbf24; }
+  .card.tools .card-icon { background: linear-gradient(135deg, #fbbf24, #7b2ff7); }
+  
+  .card.art { --glow: #ff69b4; }
+  .card.art .card-icon { background: linear-gradient(135deg, #ff69b4, #ffb347); }
+  
+  .card.videoed { --glow: #00d4ff; }
+  .card.videoed .card-icon { background: linear-gradient(135deg, #ff00ff, #00d4ff); }
+
+  .card.aihub { --glow: #39ff14; }
+  .card.aihub .card-icon { background: linear-gradient(135deg, #ff00ff, #39ff14); }
+
+  .card.fun { --glow: #fbbf24; }
+  .card.fun .card-icon { background: linear-gradient(135deg, #fbbf24, #ec4899); }
+  
+  .card.study { --glow: #3b82f6; }
+  .card.study .card-icon { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+
+  .card.finance { --glow: #22c55e; }
+  .card.finance .card-icon { background: linear-gradient(135deg, #22c55e, #16a34a); }
+
+  .footer {
+    text-align: center; color: #555; font-size: 12px;
+    letter-spacing: 2px; padding: 20px;
+    display: flex; flex-direction: column; gap: 10px; align-items: center;
+  }
+  .footer b { color: #4ade80; }
+  .privacy-link {
+    color: #00d4ff; cursor: pointer;
+    font-size: 13px; letter-spacing: 2px;
+    font-weight: 700; text-transform: uppercase;
+    border-bottom: 1px dashed #00d4ff;
+    padding-bottom: 2px;
+    transition: all 0.2s;
+  }
+  .privacy-link:hover { color: #4ade80; border-bottom-color: #4ade80; }
+
+  /* ============ МОДАЛКА ПРАВИЛ ============ */
+  .privacy-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  .privacy-overlay.active { display: block; }
+
+  .privacy-card {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #f5f5f5;
+    color: #000;
+    padding: 60px 80px;
+    border-radius: 4px;
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 1.6;
+    box-shadow: 0 0 60px rgba(0,0,0,0.9);
+    position: relative;
+  }
+  .privacy-close {
+    position: fixed;
+    top: 20px; right: 20px;
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background: #ff0000;
+    color: #fff;
+    border: none;
+    font-size: 24px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(255,0,0,0.6);
+    z-index: 10000;
+  }
+  .privacy-close:hover { transform: scale(1.1); }
+
+  .privacy-card h1 {
+    font-size: 28px;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 3px solid #000;
+    padding-bottom: 20px;
+    letter-spacing: 1px;
+  }
+  .privacy-card h2 {
+    font-size: 18px;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+  }
+  .privacy-card p {
+    font-size: 15px;
+    margin-bottom: 15px;
+    text-align: justify;
+  }
+  .privacy-card .big {
+    font-size: 17px;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.8;
+    text-align: justify;
+    margin-bottom: 20px;
+  }
+  .privacy-card .warn {
+    background: #ffe600;
+    padding: 20px;
+    border: 3px solid #000;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 20px 0;
+  }
+  .privacy-card .date {
+    text-align: right;
+    font-style: italic;
+    margin-top: 40px;
+    font-size: 14px;
+    border-top: 2px solid #000;
+    padding-top: 20px;
+  }
+  .privacy-card ul {
+    margin-left: 30px;
+    margin-bottom: 15px;
+  }
+  .privacy-card li {
+    font-size: 15px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  @media (max-width: 600px) {
+    .header h1 { font-size: 36px; }
+    .grid { grid-template-columns: 1fr; }
+    .card { min-height: 180px; padding: 24px; }
+    .privacy-card { padding: 30px 20px; margin: 20px auto; }
+    .privacy-card h1 { font-size: 20px; }
+    .privacy-card .big { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>МЕГА ПОРТАЛ</h1>
+    <p>Все мои проекты в одном месте</p>
+  </div>
+
+  <div class="grid">
+
+    <a class="card gdz" href="gdz.html">
+      <div class="tag">Учёба</div>
+      <div class="card-icon">📚</div>
+      <h2>ГДЗ 6 класс</h2>
+      <p>Ответы на вопросы по всем школьным предметам: математика, русский, история, география, биология, английский, литература, обществознание.</p>
+    </a>
+
+    <a class="card niceai" href="aiai.html">
+      <div class="tag">ИИ</div>
+      <div class="card-icon">🧠</div>
+      <h2>NiceAI</h2>
+      <p>Умный ИИ-помощник с регистрацией, темами, профилем, Codex и GPT-чатом. Работает через LM Studio.</p>
+    </a>
+
+    <a class="card memai" href="67ai.html">
+      <div class="tag">67</div>
+      <div class="card-icon">67</div>
+      <h2>67 AI</h2>
+      <p>Мемный ИИ. Отвечает только на «67», «sixseven», «черемша», «газан», «бррр патапим», «тунг сахур». Знает все мемы 2025–2026.</p>
+    </a>
+
+    <a class="card modgen" href="modgen.html">
+      <div class="tag">Моды</div>
+      <div class="card-icon">⛏</div>
+      <h2>Генератор Модов</h2>
+      <p>Генератор модов Minecraft через Qwen: выбираешь версию, пишешь описание — получаешь код.</p>
+    </a>
+
+    <a class="card vladus" href="vladus.html">
+      <div class="tag">Видео</div>
+      <div class="card-icon">🎬</div>
+      <h2>ВЛАДУС</h2>
+      <p>Видеоплатформа в стиле YouTube: видео, Shorts, комментарии, лайки, подписки, история просмотров.</p>
+    </a>
+
+    <a class="card games" href="games.html">
+      <div class="tag">Игры</div>
+      <div class="card-icon">🎮</div>
+      <h2>Мини-Игры</h2>
+      <p>Три игры в одном: Block Blast (головоломка), Змейка и Clash Mini (карточная битва башен).</p>
+    </a>
+
+    <a class="card messenger" href="messenger.html">
+      <div class="tag">Общение</div>
+      <div class="card-icon">💬</div>
+      <h2>Мессенджер</h2>
+      <p>P2P-мессенджер с регистрацией, чатами, отправкой файлов, аудио- и видеозвонками через WebRTC.</p>
+    </a>
+     
+ <a class="card art" href="art.html">
+  <div class="tag">Творчество</div>
+  <div class="card-icon">🎨</div>
+  <h2>Творческая Студия</h2>
+  <p>Рисуй, стирай, заливай, распыляй. ИИ-учитель расскажет как рисовать. Выставляй картины на выставку. Кастомная иконка сайта.</p>
+   </a>
+   
+ <a class="card tools" href="tools.html">
+  <div class="tag">Инструменты</div>
+  <div class="card-icon">🛠</div>
+  <h2>Мастерская</h2>
+  <p>15 инструментов: калькулятор, валюты, заметки, дела, пароли, QR, календарь, погода, пиксель-арт, мемы, аудио, караоке.</p>
+</a>
+  
+<a class="card videoed" href="video-editor.html">
+  <div class="tag">Видео</div>
+  <div class="card-icon">🎬</div>
+  <h2>Видео-Редактор PRO</h2>
+  <p>Редактор как CapCut: обрезка, скорость, фильтры, текст, музыка, эффекты, экспорт видео.</p>
+</a>
+
+<a class="card aihub" href="ai-hub.html">
+  <div class="tag">ИИ</div>
+  <div class="card-icon">🤖</div>
+  <h2>ИИ-Хаб</h2>
+  <p>7 ИИ-помощников: переводчик, поэт, сказочник, судья, учитель, психолог, анекдотчик. Через Qwen.</p>
+</a>
+ 
+ <a class="card fun" href="fun.html">
+  <div class="tag">Развлечения</div>
+  <div class="card-icon">🎲</div>
+  <h2>Развлечения PRO</h2>
+  <p>Гадалка на Таро, тест на IQ, гороскоп, случайные факты, мем-машина, кубик и монетка.</p>
+</a>
+ 
+ <a class="card study" href="study.html">
+  <div class="tag">Обучение</div>
+  <div class="card-icon">🎓</div>
+  <h2>Трекер обучения</h2>
+  <p>Флеш-карточки, привычки за неделю, помодоро-таймер.</p>
+</a>
+
+<a class="card finance" href="finance.html">
+  <div class="tag">Финансы</div>
+  <div class="card-icon">💰</div>
+  <h2>Финансовый трекер</h2>
+  <p>Доходы и расходы, баланс, цели накоплений с прогрессом.</p>
+</a>
+   
+  </div>
+
+  <div class="footer">
+    <div>Сделано с душой · <b>2026</b></div>
+    <div class="privacy-link" onclick="openPrivacy()">📜 Правила конфиденциальности</div>
+  </div>
+
+</div>
+
+<!-- ============ МОДАЛКА ПРАВИЛ ============ -->
+<div class="privacy-overlay" id="privacyOverlay">
+  <button class="privacy-close" onclick="closePrivacy()">✕</button>
+  <div class="privacy-card">
+    <h1>ПРАВИЛА КОНФИДЕНЦИАЛЬНОСТИ МЕГА ПОРТАЛА</h1>
+
+    <p class="big">НАСТОЯЩИЕ ПРАВИЛА КОНФИДЕНЦИАЛЬНОСТИ ДЕЙСТВУЮТ НА ВСЕЙ ТЕРРИТОРИИ МЕГА ПОРТАЛА И ВСЕХ ЕГО ПРОЕКТОВ. ИСПОЛЬЗУЯ ПОРТАЛ, ВЫ АВТОМАТИЧЕСКИ СОГЛАШАЕТЕСЬ С ЭТИМИ ПРАВИЛАМИ В ПОЛНОМ ОБЪЁМЕ. ЕСЛИ ВЫ НЕ СОГЛАСНЫ — НЕМЕДЛЕННО ПОКИНЬТЕ ПОРТАЛ.</p>
+
+    <h2>1. ОБЩИЕ ПОЛОЖЕНИЯ</h2>
+    <p class="big">1.1. МЕГА ПОРТАЛ ЯВЛЯЕТСЯ ЛИЧНЫМ ПРОЕКТОМ АВТОРА И СОЗДАН ИСКЛЮЧИТЕЛЬНО В ОБРАЗОВАТЕЛЬНЫХ, РАЗВЛЕКАТЕЛЬНЫХ И ТЕХНИЧЕСКИХ ЦЕЛЯХ.</p>
+    <p class="big">1.2. ПОРТАЛ ВКЛЮЧАЕТ В СЕБЯ СЛЕДУЮЩИЕ ПРОЕКТЫ: ГДЗ 6 КЛАСС, NICEAI, 67 AI, ГЕНЕРАТОР МОДОВ, ВЛАДУС, МИНИ-ИГРЫ И МЕССЕНДЖЕР.</p>
+    <p class="big">1.3. ВСЕ ПРОЕКТЫ РАБОТАЮТ ЛОКАЛЬНО В ВАШЕМ БРАУЗЕРЕ. НИКАКИЕ ДАННЫЕ НЕ ПЕРЕДАЮТСЯ НА СТОРОННИЕ СЕРВЕРЫ БЕЗ ВАШЕГО ВЕДОМА.</p>
+
+    <h2>2. КАКИЕ ДАННЫЕ МЫ СОБИРАЕМ</h2>
+    <p class="big">2.1. МЕГА ПОРТАЛ НЕ СОБИРАЕТ И НЕ ПЕРЕДАЁТ ЛИЧНЫЕ ДАННЫЕ ПОЛЬЗОВАТЕЛЕЙ.</p>
+    <p class="big">2.2. ДАННЫЕ, КОТОРЫЕ ВЫ ВВОДИТЕ В NICEAI (НИК, ПОЧТУ, ПАРОЛЬ, УВЛЕЧЕНИЯ, ИКОНКУ), ХРАНЯТСЯ ТОЛЬКО В ВАШЕМ БРАУЗЕРЕ ЧЕРЕЗ LOCALSTORAGE.</p>
+    <p class="big">2.3. ДАННЫЕ МЕССЕНДЖЕРА (СООБЩЕНИЯ, КОНТАКТЫ, ФАЙЛЫ) ХРАНЯТСЯ ЛОКАЛЬНО В БРАУЗЕРЕ.</p>
+    <p class="big">2.4. МЫ НЕ ИСПОЛЬЗУЕМ COOKIES ДЛЯ СЛЕЖЕНИЯ. МЫ НЕ ПОКАЗЫВАЕМ РЕКЛАМУ. МЫ НЕ ПРОДАЁМ ДАННЫЕ ТРЕТЬИМ ЛИЦАМ.</p>
+
+    <h2>3. ИСПОЛЬЗОВАНИЕ ЛОКАЛЬНОГО ИИ</h2>
+    <p class="big">3.1. NICEAI И ГЕНЕРАТОР МОДОВ РАБОТАЮТ ЧЕРЕЗ LM STUDIO, УСТАНОВЛЕННЫЙ НА ВАШЕМ КОМПЬЮТЕРЕ.</p>
+    <p class="big">3.2. ВСЕ ЗАПРОСЫ К ИИ ОТПРАВЛЯЮТСЯ НА ЛОКАЛЬНЫЙ АДРЕС 127.0.0.1:1234 И НЕ ПОКИДАЮТ ВАШ КОМПЬЮТЕР.</p>
+    <p class="big">3.3. МОДЕЛЬ QWEN, ЗАГРУЖЕННАЯ В LM STUDIO, РАБОТАЕТ АВТОНОМНО. ВЫ ПОЛНОСТЬЮ КОНТРОЛИРУЕТЕ ПРОЦЕСС.</p>
+
+    <h2>4. КОНТЕНТ, ЗАПРЕЩЁННЫЙ НА ПОРТАЛЕ</h2>
+    <div class="warn">
+      НА МЕГА ПОРТАЛЕ СТРОГО ЗАПРЕЩЕНО:
+    </div>
+    <ul>
+      <li>ИСПОЛЬЗОВАНИЕ НЕНОРМАТИВНОЙ ЛЕКСИКИ</li>
+      <li>КОНТЕНТ 18+ И ПОРНОГРАФИЧЕСКИЕ МАТЕРИАЛЫ</li>
+      <li>ПРОПАГАНДА НАСИЛИЯ, ЖЕСТОКОСТИ, ТЕРРОРИЗМА</li>
+      <li>РАЗЖИГАНИЕ МЕЖНАЦИОНАЛЬНОЙ РОЗНИ</li>
+      <li>ПРИЗЫВЫ К САМОУБИЙСТВУ И САМОПОВРЕЖДЕНИЮ</li>
+      <li>МОШЕННИЧЕСТВО И ОБМАН ПОЛЬЗОВАТЕЛЕЙ</li>
+      <li>ВРЕДОНОСНЫЙ КОД И ВИРУСЫ</li>
+      <li>НАРУШЕНИЕ АВТОРСКИХ ПРАВ</li>
+    </ul>
+    <p class="big">4.1. ЕСЛИ ВЫ ОБНАРУЖИЛИ НА ПОРТАЛЕ НАРУШЕНИЕ — НЕМЕДЛЕННО СООБЩИТЕ АВТОРУ.</p>
+    <p class="big">4.2. АВТОР ОСТАВЛЯЕТ ЗА СОБОЙ ПРАВО УДАЛИТЬ ЛЮБОЙ КОНТЕНТ БЕЗ ОБЪЯСНЕНИЯ ПРИЧИН.</p>
+
+    <h2>5. ОТВЕТСТВЕННОСТЬ ПОЛЬЗОВАТЕЛЯ</h2>
+    <p class="big">5.1. ВЫ НЕСЁТЕ ПОЛНУЮ ОТВЕТСТВЕННОСТЬ ЗА ВСЁ, ЧТО ВЫ ДЕЛАЕТЕ НА ПОРТАЛЕ.</p>
+    <p class="big">5.2. ВЫ НЕ ИМЕЕТЕ ПРАВА ИСПОЛЬЗОВАТЬ ПОРТАЛ ДЛЯ ПРОТИВОПРАВНЫХ ДЕЙСТВИЙ.</p>
+    <p class="big">5.3. ВЫ НЕ ИМЕЕТЕ ПРАВА ВЫДАВАТЬ СЕБЯ ЗА ДРУГОГО ЧЕЛОВЕКА.</p>
+    <p class="big">5.4. ВЫ НЕ ИМЕЕТЕ ПРАВА ВЗЛАМЫВАТЬ ИЛИ МОДИФИЦИРОВАТЬ КОД ПОРТАЛА БЕЗ РАЗРЕШЕНИЯ АВТОРА.</p>
+
+    <h2>6. ОТВЕТСТВЕННОСТЬ АВТОРА</h2>
+    <p class="big">6.1. АВТОР ПОРТАЛА НЕ НЕСЁТ ОТВЕТСТВЕННОСТИ ЗА ДЕЙСТВИЯ ПОЛЬЗОВАТЕЛЕЙ.</p>
+    <p class="big">6.2. АВТОР НЕ ГАРАНТИРУЕТ БЕСПЕРЕБОЙНУЮ РАБОТУ ВСЕХ ПРОЕКТОВ.</p>
+    <p class="big">6.3. АВТОР НЕ НЕСЁТ ОТВЕТСТВЕННОСТИ ЗА ПОТЕРЮ ДАННЫХ ИЗ-ЗА ОЧИСТКИ КЭША ИЛИ LOCALSTORAGE.</p>
+    <p class="big">6.4. АВТОР ОСТАВЛЯЕТ ЗА СОБОЙ ПРАВО ИЗМЕНЯТЬ ЭТИ ПРАВИЛА БЕЗ ПРЕДУПРЕЖДЕНИЯ.</p>
+
+    <h2>7. АВТОРСКИЕ ПРАВА</h2>
+    <p class="big">7.1. ВСЕ ПРОЕКТЫ НА МЕГА ПОРТАЛЕ СОЗДАНЫ АВТОРОМ ЛИЧНО.</p>
+    <p class="big">7.2. КОПИРОВАНИЕ КОДА ПОРТАЛА БЕЗ УКАЗАНИЯ АВТОРА ЗАПРЕЩЕНО.</p>
+    <p class="big">7.3. ИСПОЛЬЗОВАНИЕ ПРОЕКТОВ В КОММЕРЧЕСКИХ ЦЕЛЯХ БЕЗ РАЗРЕШЕНИЯ ЗАПРЕЩЕНО.</p>
+
+    <h2>8. КОНФИДЕНЦИАЛЬНОСТЬ ДЕТЕЙ</h2>
+    <p class="big">8.1. ПОРТАЛ СОЗДАН ДЛЯ ПОЛЬЗОВАТЕЛЕЙ ЛЮБОГО ВОЗРАСТА.</p>
+    <p class="big">8.2. МЫ НЕ СОБИРАЕМ ЛИЧНЫЕ ДАННЫЕ ДЕТЕЙ МЛАДШЕ 13 ЛЕТ.</p>
+    <p class="big">8.3. РОДИТЕЛИ НЕСУТ ОТВЕТСТВЕННОСТЬ ЗА ИСПОЛЬЗОВАНИЕ ПОРТАЛА ДЕТЬМИ.</p>
+
+    <h2>9. ИЗМЕНЕНИЯ В ПРАВИЛАХ</h2>
+    <p class="big">9.1. АВТОР МОЖЕТ ИЗМЕНИТЬ ЭТИ ПРАВИЛА В ЛЮБОЙ МОМЕНТ.</p>
+    <p class="big">9.2. ПРОДОЛЖЕНИЕ ИСПОЛЬЗОВАНИЯ ПОРТАЛА ПОСЛЕ ИЗМЕНЕНИЙ ОЗНАЧАЕТ СОГЛАСИЕ С НОВЫМИ ПРАВИЛАМИ.</p>
+    <p class="big">9.3. АКТУАЛЬНАЯ ВЕРСИЯ ПРАВИЛ ВСЕГДА ДОСТУПНА ПО ССЫЛКЕ ВНИЗУ ПОРТАЛА.</p>
+
+    <h2>10. КОНТАКТЫ</h2>
+    <p class="big">10.1. ПО ВСЕМ ВОПРОСАМ ОБРАЩАЙТЕСЬ К АВТОРУ ПОРТАЛА.</p>
+    <p class="big">10.2. АВТОР ВСЕГДА РАД ПОМОЧЬ И ОТВЕТИТЬ НА ВОПРОСЫ.</p>
+
+    <h2>11. ЗАКЛЮЧИТЕЛЬНЫЕ ПОЛОЖЕНИЯ</h2>
+    <p class="big">11.1. ИСПОЛЬЗУЯ МЕГА ПОРТАЛ, ВЫ ПОДТВЕРЖДАЕТЕ, ЧТО ПРОЧИТАЛИ ЭТИ ПРАВИЛА ПОЛНОСТЬЮ.</p>
+    <p class="big">11.2. ВЫ ПОНИМАЕТЕ ВСЕ ПОЛОЖЕНИЯ ЭТИХ ПРАВИЛ.</p>
+    <p class="big">11.3. ВЫ СОГЛАСНЫ СОБЛЮДАТЬ ЭТИ ПРАВИЛА БЕЗ ИСКЛЮЧЕНИЙ.</p>
+    <p class="big">11.4. ЕСЛИ ВЫ НЕ СОГЛАСНЫ — ВЫ ОБЯЗАНЫ ПРЕКРАТИТЬ ИСПОЛЬЗОВАНИЕ ПОРТАЛА.</p>
+
+    <div class="date">
+      ДАТА ПОСЛЕДНЕГО ОБНОВЛЕНИЯ: 12 СЕНТЯБРЯ 2026 ГОДА
+    </div>
+  </div>
+</div>
+
+<script>
+  function openPrivacy() {
+    document.getElementById('privacyOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closePrivacy() {
+    document.getElementById('privacyOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  // Закрыть по ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closePrivacy();
+  });
+  // Закрыть по клику вне карточки
+  document.getElementById('privacyOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closePrivacy();
+  });
+</script>
+</body>
+</html>
