@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧠 Помощник</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%233b82f6'/><stop offset='1' stop-color='%23ec4899'/></linearGradient></defs><rect width='64' height='64' rx='14' fill='url(%23g)'/><text x='50%25' y='60%25' font-size='40' text-anchor='middle' dominant-baseline='middle'>🧠</text></svg>">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
+body { background:linear-gradient(135deg,#0a0a1a,#1a0a2d,#0a1a2d); color:#fff; min-height:100vh; padding:20px; }
+.container { max-width:1100px; margin:0 auto; }
+.back-link { display:inline-flex; align-items:center; gap:8px; color:#ec4899; text-decoration:none; font-size:14px; padding:10px 18px; border:1px solid rgba(236,72,153,0.4); border-radius:12px; margin-bottom:20px; }
+.back-link:hover { background:rgba(236,72,153,0.15); }
+h1 { font-size:32px; margin-bottom:8px; background:linear-gradient(135deg,#3b82f6,#ec4899); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.subtitle { color:#888; margin-bottom:24px; font-size:14px; }
+.tabs { display:flex; gap:10px; margin-bottom:24px; flex-wrap:wrap; }
+.tab { padding:12px 24px; border-radius:14px; background:rgba(255,255,255,0.05); border:2px solid rgba(255,255,255,0.1); color:#c0c0e0; font-weight:700; cursor:pointer; font-size:15px; font-family:inherit; }
+.tab.active { background:linear-gradient(135deg,#3b82f6,#ec4899); border-color:transparent; color:#fff; }
+.panel { display:none; }
+.panel.active { display:block; }
+.card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:24px; margin-bottom:20px; }
+.card h2 { font-size:20px; margin-bottom:16px; color:#ec4899; }
+.card h3 { font-size:16px; margin:16px 0 8px; color:#a78bfa; }
+.input-row { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+input[type=text], textarea { flex:1; padding:14px 18px; border-radius:14px; border:2px solid rgba(255,255,255,0.15); background:rgba(0,0,0,0.3); color:#fff; font-size:16px; outline:none; font-family:inherit; min-width:200px; }
+input[type=text]:focus, textarea:focus { border-color:#ec4899; }
+textarea { min-height:140px; resize:vertical; width:100%; }
+button.btn { padding:14px 28px; border-radius:14px; border:none; background:linear-gradient(135deg,#3b82f6,#ec4899); color:#fff; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap; }
+button.btn:hover { opacity:0.9; }
+button.btn.gray { background:rgba(255,255,255,0.1); }
+.answer-box { background:rgba(74,222,128,0.1); border:2px solid rgba(74,222,128,0.4); border-radius:14px; padding:18px; margin-top:16px; }
+.answer-box .label { font-size:12px; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+.answer-box .value { font-size:24px; font-weight:900; color:#4ade80; word-break:break-all; }
+.answer-box.error { background:rgba(248,113,113,0.1); border-color:rgba(248,113,113,0.4); }
+.answer-box.error .value { color:#f87171; }
+.hint { color:#888; font-size:13px; margin-top:12px; }
+.hint b { color:#a0a0c0; }
+.error-item { padding:12px 16px; background:rgba(248,113,113,0.12); border-left:4px solid #f87171; border-radius:8px; margin-bottom:10px; font-size:14px; line-height:1.6; }
+.error-item .wrong-word { color:#f87171; font-weight:700; text-decoration:line-through; }
+.error-item .right-word { color:#4ade80; font-weight:700; cursor:pointer; padding:2px 6px; border-radius:6px; }
+.error-item .right-word:hover { background:rgba(74,222,128,0.2); }
+.error-item .pos { color:#888; font-size:11px; margin-left:6px; }
+.parse-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+.parse-item { padding:14px; background:rgba(0,0,0,0.3); border-radius:12px; border:1px solid rgba(255,255,255,0.08); }
+.parse-item .k { font-size:11px; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+.parse-item .v { font-size:15px; font-weight:600; color:#fff; word-break:break-word; }
+.chip-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.chip { padding:8px 16px; border-radius:20px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#c0c0e0; font-size:13px; cursor:pointer; font-family:inherit; }
+.chip:hover { background:rgba(236,72,153,0.2); }
+.chip.active { background:linear-gradient(135deg,#3b82f6,#ec4899); border-color:transparent; color:#fff; }
+.toast { position:fixed; top:20px; left:50%; transform:translate(-50%,-100px); background:rgba(0,0,0,0.95); color:#fff; padding:14px 28px; border-radius:14px; border:2px solid #ec4899; font-size:14px; font-weight:700; z-index:5000; transition:transform 0.4s; max-width:90vw; }
+.toast.show { transform:translate(-50%,0); }
+.loading { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#ec4899; border-radius:50%; animation:spin 0.8s linear infinite; margin-right:8px; vertical-align:middle; }
+@keyframes spin { to { transform:rotate(360deg); } }
+@media (max-width:600px) { h1 { font-size:24px; } .card { padding:16px; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back-link" href="2test.html">← Назад в портал</a>
+  <h1>🧠 Помощник</h1>
+  <p class="subtitle">Математика · Русский язык · Проверка через Яндекс.Спеллер</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('math', this)">🧮 Математика</button>
+    <button class="tab" onclick="switchTab('russian', this)">📝 Русский язык</button>
+  </div>
+
+  <div class="panel active" id="panel-math">
+    <div class="card">
+      <h2>🧮 Решить пример</h2>
+      <div class="chip-row">
+        <button class="chip" onclick="insertOp('+')">+</button>
+        <button class="chip" onclick="insertOp('-')">−</button>
+        <button class="chip" onclick="insertOp('*')">×</button>
+        <button class="chip" onclick="insertOp('/')">÷</button>
+        <button class="chip" onclick="insertOp('^')">x²</button>
+        <button class="chip" onclick="insertOp('(')">(</button>
+        <button class="chip" onclick="insertOp(')')">)</button>
+        <button class="chip" onclick="insertOp('.')">,</button>
+        <button class="chip" onclick="insertOp('%')">%</button>
+        <button class="chip" onclick="clearInput()">✕ Очистить</button>
+      </div>
+      <div class="input-row">
+        <input type="text" id="mathInput" placeholder="Например: 2,34 : 0,39 · (10,7 − 2,3)" onkeydown="if(event.key==='Enter')solveMath()">
+        <button class="btn" onclick="solveMath()">Решить</button>
+      </div>
+      <div class="hint">Поддерживается: <b>+ − × ÷</b>, дроби через <b>.</b> или <b>,</b>, проценты <b>%</b>, степени <b>^</b>, скобки.</div>
+    </div>
+    <div id="mathResult"></div>
+  </div>
+
+  <div class="panel" id="panel-russian">
+    <div class="card">
+      <h2>📝 Анализ русского</h2>
+      <div class="chip-row">
+        <button class="chip active" data-mode="check" onclick="setRussianMode('check', this)">🔍 Ошибки</button>
+        <button class="chip" data-mode="morph" onclick="setRussianMode('morph', this)">📚 Морфология</button>
+        <button class="chip" data-mode="phonetic" onclick="setRussianMode('phonetic', this)">🔊 Фонетика</button>
+        <button class="chip" data-mode="morpheme" onclick="setRussianMode('morpheme', this)">🧩 Морфемы</button>
+        <button class="chip" data-mode="all" onclick="setRussianMode('all', this)">✨ Всё сразу</button>
+      </div>
+      <textarea id="russianInput" placeholder="Введи текст или слово..."></textarea>
+      <div class="input-row" style="margin-top:12px;">
+        <button class="btn" id="analyzeBtn" onclick="analyzeRussian()">Проверить</button>
+        <button class="btn gray" onclick="document.getElementById('russianInput').value=''; document.getElementById('russianResult').innerHTML='';">Очистить</button>
+      </div>
+      <div class="hint">Проверка через <b>Яндекс.Спеллер API</b> (бесплатно, без ключа). Морфология — на правилах.</div>
+    </div>
+    <div id="russianResult"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var russianMode = 'check';
+
+/* ============================================================
+   МАТЕМАТИКА
+============================================================ */
+function insertOp(op) { var el = document.getElementById('mathInput'); el.value += op; el.focus(); }
+function clearInput() { document.getElementById('mathInput').value = ''; document.getElementById('mathResult').innerHTML = ''; }
+function normalizeMath(str) { return str.replace(/\s+/g, ' ').replace(/,/g, '.').replace(/÷/g, '/').replace(/×/g, '*').replace(/−/g, '-').replace(/–/g, '-').replace(/—/g, '-').replace(/:/g, '/').replace(/·/g, '*'); }
+function tokenize(str) {
+  var tokens = [], i = 0;
+  while (i < str.length) {
+    var c = str[i];
+    if (c === ' ') { i++; continue; }
+    if (/[0-9.]/.test(c)) {
+      var num = '';
+      while (i < str.length && /[0-9.]/.test(str[i])) { num += str[i]; i++; }
+      if (i < str.length && str[i] === '%') { tokens.push({ type: 'num', value: parseFloat(num) / 100 }); i++; }
+      else tokens.push({ type: 'num', value: parseFloat(num) });
+      continue;
+    }
+    if ('+-*/^()'.indexOf(c) !== -1) { tokens.push({ type: 'op', value: c }); i++; continue; }
+    throw new Error('Неизвестный символ: ' + c);
+  }
+  return tokens;
+}
+function toRPN(tokens) {
+  var output = [], stack = [], prev = null;
+  for (var i = 0; i < tokens.length; i++) {
+    var t = tokens[i];
+    if (t.type === 'num') output.push(t);
+    else if (t.value === '(') stack.push(t);
+    else if (t.value === ')') {
+      while (stack.length && stack[stack.length-1].value !== '(') output.push(stack.pop());
+      if (!stack.length) throw new Error('Лишняя скобка )');
+      stack.pop();
+    } else if (t.type === 'op') {
+      if (t.value === '-' && (prev === null || (prev.type === 'op' && prev.value !== ')'))) output.push({ type: 'num', value: 0 });
+      var prec = { '+':1, '-':1, '*':2, '/':2, '^':3 }[t.value];
+      var rightAssoc = (t.value === '^');
+      while (stack.length) {
+        var top = stack[stack.length-1];
+        if (top.value === '(') break;
+        var topPrec = { '+':1, '-':1, '*':2, '/':2, '^':3 }[top.value];
+        if (topPrec > prec || (topPrec === prec && !rightAssoc)) output.push(stack.pop());
+        else break;
+      }
+      stack.push(t);
+    }
+    prev = t;
+  }
+  while (stack.length) {
+    var op = stack.pop();
+    if (op.value === '(') throw new Error('Лишняя скобка (');
+    output.push(op);
+  }
+  return output;
+}
+function evalRPN(rpn) {
+  var stack = [];
+  for (var i = 0; i < rpn.length; i++) {
+    var t = rpn[i];
+    if (t.type === 'num') { stack.push(t.value); continue; }
+    var b = stack.pop(), a = stack.pop();
+    if (a === undefined || b === undefined) throw new Error('Не хватает чисел');
+    var r;
+    switch (t.value) {
+      case '+': r = a + b; break;
+      case '-': r = a - b; break;
+      case '*': r = a * b; break;
+      case '/': if (b === 0) throw new Error('Деление на ноль!'); r = a / b; break;
+      case '^': r = Math.pow(a, b); break;
+    }
+    stack.push(r);
+  }
+  if (stack.length !== 1) throw new Error('Ошибка в выражении');
+  return stack[0];
+}
+function formatNumber(n) {
+  if (Number.isInteger(n)) return n.toString();
+  return n.toFixed(10).replace(/\.?0+$/, '').replace('.', ',');
+}
+function solveMath() {
+  var input = document.getElementById('mathInput').value.trim();
+  var resultBox = document.getElementById('mathResult');
+  if (!input) { showToast('⚠ Введи пример', '#f87171'); return; }
+  try {
+    var percentMatch = input.match(/(\d+[.,]?\d*)\s*%\s*от\s*(\d+[.,]?\d*)/i);
+    var answer;
+    if (percentMatch) {
+      answer = parseFloat(percentMatch[1].replace(',', '.')) / 100 * parseFloat(percentMatch[2].replace(',', '.'));
+    } else {
+      answer = evalRPN(toRPN(tokenize(normalizeMath(input))));
+    }
+    resultBox.innerHTML = '<div class="card"><h2>✅ Ответ</h2><div class="answer-box"><div class="label">Результат</div><div class="value">' + formatNumber(answer) + '</div></div></div>';
+    showToast('✅ Решено!', '#4ade80');
+  } catch (e) {
+    resultBox.innerHTML = '<div class="card"><div class="answer-box error"><div class="label">Ошибка</div><div class="value">' + escapeHtml(e.message) + '</div></div></div>';
+    showToast('⚠ ' + e.message, '#f87171');
+  }
+}
+
+/* ============================================================
+   МОРФОЛОГИЯ (на правилах)
+============================================================ */
+function getMorphology(word) {
+  var w = word.toLowerCase().replace(/[^а-яё]/g, '');
+  if (!w) return null;
+  var result = { word: w, partOfSpeech: '—', gender: '—', number: '—', case: '—', declension: '—', conjugation: '—', aspect: '—', tense: '—', person: '—' };
+
+  var pronouns = ['я','ты','он','она','оно','мы','вы','они','это','то','тот','та','те','этот','эта','эти','себя','свой','своя','своё','свои','мой','моя','моё','мои','твой','твоя','твоё','твои','наш','наша','наше','наши','ваш','ваша','ваше','ваши','его','её','их','кто','что','который','какая','какое','какие'];
+  if (pronouns.indexOf(w) !== -1) { result.partOfSpeech = 'Местоимение'; return result; }
+  var preps = ['в','во','на','за','под','над','из','от','до','по','при','про','без','для','о','об','обо','с','со','к','ко','у','через','между','перед','около','возле','после','вокруг','сквозь','ради','благодаря','вопреки'];
+  if (preps.indexOf(w) !== -1) { result.partOfSpeech = 'Предлог'; return result; }
+  var conjs = ['и','а','но','да','или','либо','если','что','чтобы','как','когда','потому','поэтому','однако','зато','тоже','также','причём','притом'];
+  if (conjs.indexOf(w) !== -1) { result.partOfSpeech = 'Союз'; return result; }
+  var parts = ['не','ни','же','ли','бы','ведь','вот','вон','даже','именно','только','лишь','уж'];
+  if (parts.indexOf(w) !== -1) { result.partOfSpeech = 'Частица'; return result; }
+  var advs = ['быстро','медленно','хорошо','плохо','красиво','много','мало','очень','слишком','здесь','там','тут','везде','нигде','сейчас','теперь','потом','раньше','позже','всегда','никогда','иногда','часто','редко','сегодня','вчера','завтра'];
+  if (advs.indexOf(w) !== -1) { result.partOfSpeech = 'Наречие'; return result; }
+  if (/^(один|одна|одно|два|две|три|четыре|пять|шесть|семь|восемь|девять|десять|ноль|нуль|сотня|тысяча|миллион|первый|второй|третий|четвёртый|пятый)$/.test(w)) { result.partOfSpeech = 'Числительное'; return result; }
+
+  // Глаголы
+  if (/(ть|ться|тся|шь|шься|л|ла|ло|ли|ет|ит|ут|ют|ат|ят|ем|им|ете|ите)$/.test(w) && w.length > 3) {
+    result.partOfSpeech = /(ать|ять|еть|ить|ыть|уть)$/.test(w) ? 'Глагол (инфинитив)' : 'Глагол';
+    if (/^(по|при|у|вы|за|на|про|пере|из|с|от|до|раз|рас)/.test(w) && !/(ыва|ива)/.test(w)) result.aspect = 'Совершенный';
+    else result.aspect = 'Несовершенный';
+    if (/ить$/.test(w)) result.conjugation = 'II спряжение';
+    else if (/(еть|ать|ять)$/.test(w)) result.conjugation = 'I спряжение';
+    if (/(л|ла|ло|ли)$/.test(w)) result.tense = 'Прошедшее';
+    else if (/(ет|ит|ут|ют|ат|ят|ем|им|ете|ите)$/.test(w)) result.tense = 'Настоящее';
+    if (/(у|ю|шь|ться|тся)$/.test(w)) result.person = '1-е';
+    else if (/(ешь|ишь|ете|ите|шься)$/.test(w)) result.person = '2-е';
+    else if (/(ет|ит|ут|ют|ат|ят)$/.test(w)) result.person = '3-е';
+    return result;
+  }
+
+  // Прилагательные
+  if (/(ый|ий|ой|ая|яя|ое|ее|ые|ие|ого|его|ому|ему|ым|им|ыми|ими)$/.test(w)) {
+    result.partOfSpeech = 'Прилагательное';
+    if (/(ая|яя)$/.test(w)) result.gender = 'Женский';
+    else if (/(ое|ее)$/.test(w)) result.gender = 'Средний';
+    else if (/(ый|ий|ой)$/.test(w)) result.gender = 'Мужской';
+    result.number = /(ые|ие|ыми|ими)$/.test(w) ? 'Множественное' : 'Единственное';
+    return result;
+  }
+
+  // Существительное
+  result.partOfSpeech = 'Существительное';
+  if (/(а|я)$/.test(w) && !/(мя|время|имя|пламя|знамя|племя|семя|стремя|темя|бремя)$/.test(w)) result.gender = 'Женский';
+  else if (/(о|е|мя)$/.test(w)) result.gender = 'Средний';
+  else if (/[бвгджзйклмнпрстфхцчшщ]$/.test(w)) result.gender = 'Мужской';
+  else if (/ь$/.test(w)) result.gender = 'Мужской/Женский';
+  if (/(ы|и)$/.test(w) && w.length > 3 && !/(ий|ый|ой)$/.test(w)) result.number = 'Множественное';
+  else result.number = 'Единственное';
+  if (result.gender === 'Женский' && /(а|я)$/.test(w)) result.declension = '1-е';
+  else if ((result.gender === 'Мужской' || result.gender === 'Средний') && !/ь$/.test(w)) result.declension = '2-е';
+  else if (result.gender === 'Женский' && /ь$/.test(w)) result.declension = '3-е';
+  if (/(ой|ей|ом|ем|ым|им|ыми|ими)$/.test(w)) result.case = 'Творительный';
+  else if (/(у|ю|ам|ям)$/.test(w)) result.case = 'Дательный';
+  else if (/(а|я|ы|и|ов|ев|ёв)$/.test(w)) result.case = 'Родительный';
+  else result.case = 'Именительный/Винительный';
+  return result;
+}
+
+/* ============================================================
+   ФОНЕТИКА
+============================================================ */
+function getPhonetic(word) {
+  var vowels = 'аеёиоуыэюя';
+  var voiced = 'бвгдзжлмнрй';
+  var voiceless = 'пфктшсхцчщ';
+  var w = word.toLowerCase().replace(/[^а-яё]/g, '');
+  var sounds = [];
+  for (var i = 0; i < w.length; i++) {
+    var l = w[i];
+    var s = { letter: l, sound: l, type: '', voiced: '', soft: '', pair: '' };
+    if (vowels.indexOf(l) !== -1) { s.type = 'гласный'; }
+    else if (l === 'ь' || l === 'ъ') { s.type = 'не обозначает звука'; s.sound = '—'; }
+    else {
+      s.type = 'согласный';
+      s.voiced = voiced.indexOf(l) !== -1 ? 'звонкий' : (voiceless.indexOf(l) !== -1 ? 'глухой' : '—');
+      s.soft = 'йчщ'.indexOf(l) !== -1 ? 'мягкий' : ('жшц'.indexOf(l) !== -1 ? 'твёрдый' : 'может быть мягким/твёрдым');
+      var pairs = { 'б':'п','п':'б','в':'ф','ф':'в','г':'к','к':'г','д':'т','т':'д','ж':'ш','ш':'ж','з':'с','с':'з' };
+      s.pair = pairs[l] ? 'парный (со звуком ' + pairs[l] + ')' : 'непарный';
+    }
+    sounds.push(s);
+  }
+  return sounds;
+}
+
+/* ============================================================
+   МОРФЕМЫ
+============================================================ */
+function getMorphemes(word) {
+  var w = word.toLowerCase().replace(/[^а-яё]/g, '');
+  var result = { prefix: '', root: '', suffix: '', ending: '', base: '' };
+  if (w.length < 3) { result.root = w; result.base = w; return result; }
+  var endings = ['ами','ями','ах','ях','ов','ев','ёв','ой','ей','ом','ем','ым','им','ыми','ими','ого','его','ому','ему','ая','яя','ое','ее','ые','ие','ый','ий','а','я','о','е','ы','и','у','ю','ь'];
+  for (var i = 0; i < endings.length; i++) {
+    if (w.endsWith(endings[i]) && w.length - endings[i].length >= 2) { result.ending = endings[i]; break; }
+  }
+  var withoutEnding = result.ending ? w.slice(0, -result.ending.length) : w;
+  var prefixes = ['пере','пред','противо','полу','после','под','над','об','от','до','по','при','про','пре','раз','рас','без','бес','воз','вос','из','ис','на','за','не','ни','с','со','у','вы'];
+  for (var j = 0; j < prefixes.length; j++) {
+    if (withoutEnding.startsWith(prefixes[j]) && withoutEnding.length - prefixes[j].length >= 3) { result.prefix = prefixes[j]; break; }
+  }
+  var withoutPrefix = result.prefix ? withoutEnding.slice(result.prefix.length) : withoutEnding;
+  var suffixes = ['ость','есть','ность','ение','ание','тие','ство','ствие','ик','ек','ок','ёк','чик','щик','ник','тель','ист','ец','иц','к','очк','ечк','оньк','еньк','ушк','юшк','ищ','ова','ева','ирова','ать','ять','еть','ить','ыть','уть','ся','сь','ый','ий','ой','ая','яя','ое','ее','ые','ие','ск','ческ','ическ','ов','ев','н','льн','тельн','онн','енн'];
+  for (var k = 0; k < suffixes.length; k++) {
+    if (withoutPrefix.endsWith(suffixes[k]) && withoutPrefix.length - suffixes[k].length >= 3) { result.suffix = suffixes[k]; break; }
+  }
+  result.root = result.suffix ? withoutPrefix.slice(0, -result.suffix.length) : withoutPrefix;
+  result.base = (result.prefix || '') + result.root + (result.suffix || '');
+  return result;
+}
+
+/* ============================================================
+   ЯНДЕКС.СПЕЛЛЕР + АНАЛИЗ
+============================================================ */
+function setRussianMode(mode, btn) {
+  russianMode = mode;
+  document.querySelectorAll('#panel-russian .chip').forEach(function(c) { c.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+}
+
+function analyzeRussian() {
+  var text = document.getElementById('russianInput').value.trim();
+  var box = document.getElementById('russianResult');
+  if (!text) { showToast('⚠ Введи текст', '#f87171'); return; }
+
+  box.innerHTML = '<div class="card"><span class="loading"></span> Проверяю через Яндекс.Спеллер...</div>';
+
+  var url = 'https://speller.yandex.net/services/spellservice.json/checkText?text=' + encodeURIComponent(text) + '&lang=ru&options=518';
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(errors) {
+      var html = '';
+      var words = text.split(/\s+/).filter(function(w) { return w.trim(); });
+
+      // Проверка ошибок
+      if (russianMode === 'check' || russianMode === 'all') {
+        html += '<div class="card"><h2>🔍 Проверка орфографии</h2>';
+        if (errors.length === 0) {
+          html += '<div class="answer-box"><div class="label">Результат</div><div class="value">Ошибок не найдено ✅</div></div>';
+        } else {
+          html += '<div class="hint" style="margin-bottom:12px;">Найдено ошибок: <b>' + errors.length + '</b></div>';
+          errors.forEach(function(err) {
+            var word = text.substr(err.pos, err.len);
+            html += '<div class="error-item">';
+            html += '<span class="wrong-word">' + escapeHtml(word) + '</span>';
+            if (err.s && err.s.length) {
+              html += ' → ' + err.s.map(function(s) {
+                return '<span class="right-word" onclick="replaceWord(this, \'' + escapeHtml(s) + '\', ' + err.pos + ', ' + err.len + ')">' + escapeHtml(s) + '</span>';
+              }).join(' / ');
+            }
+            html += '<span class="pos">позиция ' + err.pos + '</span>';
+            html += '</div>';
+          });
+        }
+        html += '</div>';
+      }
+
+      // Морфология
+      if (russianMode === 'morph' || russianMode === 'all') {
+        html += '<div class="card"><h2>📚 Морфологический разбор</h2>';
+        words.slice(0, 10).forEach(function(w) {
+          var m = getMorphology(w);
+          if (!m) return;
+          html += '<h3>«' + escapeHtml(w) + '»</h3><div class="parse-grid">';
+          html += '<div class="parse-item"><div class="k">Часть речи</div><div class="v">' + m.partOfSpeech + '</div></div>';
+          if (m.gender !== '—') html += '<div class="parse-item"><div class="k">Род</div><div class="v">' + m.gender + '</div></div>';
+          if (m.number !== '—') html += '<div class="parse-item"><div class="k">Число</div><div class="v">' + m.number + '</div></div>';
+          if (m.case !== '—') html += '<div class="parse-item"><div class="k">Падеж</div><div class="v">' + m.case + '</div></div>';
+          if (m.declension !== '—') html += '<div class="parse-item"><div class="k">Склонение</div><div class="v">' + m.declension + '</div></div>';
+          if (m.conjugation !== '—') html += '<div class="parse-item"><div class="k">Спряжение</div><div class="v">' + m.conjugation + '</div></div>';
+          if (m.aspect !== '—') html += '<div class="parse-item"><div class="k">Вид</div><div class="v">' + m.aspect + '</div></div>';
+          if (m.tense !== '—') html += '<div class="parse-item"><div class="k">Время</div><div class="v">' + m.tense + '</div></div>';
+          if (m.person !== '—') html += '<div class="parse-item"><div class="k">Лицо</div><div class="v">' + m.person + '</div></div>';
+          html += '</div>';
+        });
+        html += '</div>';
+      }
+
+      // Фонетика
+      if (russianMode === 'phonetic' || russianMode === 'all') {
+        html += '<div class="card"><h2>🔊 Фонетический разбор</h2>';
+        var firstWord = words[0] ? words[0].replace(/[^а-яё]/gi, '') : '';
+        if (firstWord) {
+          var sounds = getPhonetic(firstWord);
+          var vowels = 'аеёиоуыэюя';
+          html += '<h3>«' + escapeHtml(firstWord) + '»</h3>';
+          html += '<div class="parse-grid">';
+          html += '<div class="parse-item"><div class="k">Букв</div><div class="v">' + firstWord.length + '</div></div>';
+          html += '<div class="parse-item"><div class="k">Звуков</div><div class="v">' + sounds.filter(function(s){return s.sound !== '—';}).length + '</div></div>';
+          html += '<div class="parse-item"><div class="k">Слогов</div><div class="v">' + firstWord.toLowerCase().split('').filter(function(l){return vowels.indexOf(l)!==-1;}).length + '</div></div>';
+          html += '</div>';
+          html += '<div class="parse-item" style="margin-top:12px;"><div class="k">Разбор</div><div class="v" style="font-size:14px;line-height:2;">';
+          sounds.forEach(function(s) {
+            html += '<b>' + s.letter + '</b> → [' + s.sound + '] (' + s.type;
+            if (s.voiced) html += ', ' + s.voiced;
+            if (s.soft) html += ', ' + s.soft;
+            if (s.pair) html += ', ' + s.pair;
+            html += ')<br>';
+          });
+          html += '</div></div>';
+        }
+        html += '</div>';
+      }
+
+      // Морфемы
+      if (russianMode === 'morpheme' || russianMode === 'all') {
+        html += '<div class="card"><h2>🧩 Морфемный разбор</h2>';
+        var w = words[0] ? words[0].replace(/[^а-яё]/gi, '') : '';
+        if (w) {
+          var m = getMorphemes(w);
+          html += '<h3>«' + escapeHtml(w) + '»</h3><div class="parse-grid">';
+          html += '<div class="parse-item"><div class="k">Приставка</div><div class="v">' + (m.prefix || '—') + '</div></div>';
+          html += '<div class="parse-item"><div class="k">Корень</div><div class="v">' + (m.root || '—') + '</div></div>';
+          html += '<div class="parse-item"><div class="k">Суффикс</div><div class="v">' + (m.suffix || '—') + '</div></div>';
+          html += '<div class="parse-item"><div class="k">Окончание</div><div class="v">' + (m.ending || '—') + '</div></div>';
+          html += '<div class="parse-item"><div class="k">Основа</div><div class="v">' + (m.base || '—') + '</div></div>';
+          html += '</div>';
+        }
+        html += '</div>';
+      }
+
+      box.innerHTML = html;
+      showToast('✅ Готово!', '#4ade80');
+    })
+    .catch(function(e) {
+      box.innerHTML = '<div class="card"><div class="answer-box error"><div class="label">Ошибка</div><div class="value">Не удалось проверить: ' + escapeHtml(e.message) + '</div></div></div>';
+      showToast('⚠ Ошибка API', '#f87171');
+    });
+}
+
+function replaceWord(el, newWord, pos, len) {
+  var textarea = document.getElementById('russianInput');
+  var text = textarea.value;
+  textarea.value = text.slice(0, pos) + newWord + text.slice(pos + len);
+  showToast('✏️ Заменено', '#4ade80');
+  analyzeRussian();
+}
+
+/* ============================================================
+   ОБЩЕЕ
+============================================================ */
+function switchTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('panel-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+function showToast(text, color) {
+  var t = document.getElementById('toast');
+  t.textContent = text;
+  t.style.borderColor = color || '#ec4899';
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function() { t.classList.remove('show'); }, 2200);
+}
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
